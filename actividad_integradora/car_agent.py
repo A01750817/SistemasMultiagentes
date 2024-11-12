@@ -1,4 +1,5 @@
 import mesa
+import traffic_light
 
 class CarAgent(mesa.Agent):
     """
@@ -15,7 +16,15 @@ class CarAgent(mesa.Agent):
         new_position = self.random.choice(possible_movements)
         self.model.grid.move_agent(self, new_position)
     
+    def is_stop(self):
+        if(traffic_light.state == True):
+            self.move()
+            print("En movimiento")
+        else:
+            print("Detenido")
+    
+    
     def step(self):
-        self.move()
+        self.is_stop()
 
 
