@@ -7,7 +7,7 @@ class cityClass(mesa.Model):
     def __init__(self, numberAgents=1, width=24, height=24, torus=False):
         super().__init__()  # Inicializa la clase base mesa.Model
         self.num_agents = numberAgents
-        self.grid = mesa.space.SingleGrid(width, height, torus) 
+        self.grid = mesa.space.MultiGrid(width, height, torus) 
         self.car_schedule = mesa.time.RandomActivation(self)
         self.traffic_light_schedule = mesa.time.BaseScheduler(self)
         self.running = True
