@@ -24,11 +24,7 @@ class CarAgent(mesa.Agent):
             print("Detenido")
     
     
-    
-        
-    
     def step(self):
-        self.move()
-
+        self.is_stop()
 
 
