@@ -20,8 +20,11 @@ class CarAgent(mesa.Agent):
         if(traffic_light.state == True):
             self.move()
             print("En movimiento")
-        else:
+        elif(traffic_light.state == False):
             print("Detenido")
+        else: 
+            self.move()
+        
     
     
     def step(self):
