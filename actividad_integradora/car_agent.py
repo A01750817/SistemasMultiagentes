@@ -15,4 +15,7 @@ class CarAgent(mesa.Agent):
         new_position = self.random.choice(possible_movements)
         self.model.grid.move_agent(self, new_position)
     
-    
+    def step(self):
+        self.move()
+
+
