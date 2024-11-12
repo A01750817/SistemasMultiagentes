@@ -39,6 +39,6 @@ class cityClass(mesa.Model):
         self.car_schedule.step()
         self.traffic_light_schedule.step()
         
-# Ahora quiero visualizarlo 
+# Ahora quiero visualizarlo con matploitlib
+# Now I want to visualize it with matplotlib
 
-city = cityClass()
