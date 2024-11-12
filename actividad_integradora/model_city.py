@@ -4,9 +4,9 @@ import traffic_light
 import car_agent 
 
 class cityClass(mesa.Model):
-    def __init__(self, numberAgents=1, width=24, height=24):
+    def __init__(self, numberAgents=1, width=24, height=24, torus=False):
         self.num_agents = numberAgents
-        self.grid = mesa.space.SingleGrid(width, height) 
+        self.grid = mesa.space.SingleGrid(width, height, torus) 
         self.car_schedule = mesa.time.RandomActivation(self)
         self.traffic_light_schedule = mesa.time.BaseScheduler(self)
         self.running = True
@@ -39,6 +39,3 @@ class cityClass(mesa.Model):
         self.car_schedule.step()
         self.traffic_light_schedule.step()
         
-# Ahora quiero visualizarlo con matploitlib
-# Now I want to visualize it with matplotlib
-
