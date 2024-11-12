@@ -15,14 +15,15 @@ class cityClass(mesa.Model):
         self.height = height
         self.create_agents()
         
-        # agregar semaforos
-        # add traffic lights que seran agents
+        # Agregar semáforos
         self.create_traffic_lights()
         
     def create_agents(self):
         for i in range(self.num_agents):
-            car = car_agent.CarAgent(i, self)
-            self.grid.place_agent(car, (self.random.randrange(self.width), self.random.randrange(self.height)))
+            # Generar una posición aleatoria para el coche
+            pos = (self.random.randrange(self.width), self.random.randrange(self.height))
+            car = car_agent.CarAgent(self, i, pos)  # Pasar model, unique_id, pos
+            self.grid.place_agent(car, pos)
             self.car_schedule.add(car)
         
     def create_traffic_lights(self):
@@ -39,4 +40,3 @@ class cityClass(mesa.Model):
     def step(self):
         self.car_schedule.step()
         self.traffic_light_schedule.step()
-        
