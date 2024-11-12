@@ -5,6 +5,7 @@ import car_agent
 
 class cityClass(mesa.Model):
     def __init__(self, numberAgents=1, width=24, height=24, torus=False):
+        super().__init__()  # Inicializa la clase base mesa.Model
         self.num_agents = numberAgents
         self.grid = mesa.space.SingleGrid(width, height, torus) 
         self.car_schedule = mesa.time.RandomActivation(self)
