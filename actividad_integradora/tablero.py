@@ -1,31 +1,31 @@
-from model_city import cityClass
-import matplotlib.pyplot as plt
-from traffic_light import Traffic_light
-from car_agent import CarAgent
+from model_city import cityClass  
+import car_agent
+import traffic_light
+import matplotlib.pyplot as plt  
 
 def show_grid(model):
     grid = model.grid
+    # Mesa no tiene un método render() por defecto para SingleGrid, necesitarás definirlo
+    grid_data = grid.grid  # Obtiene la cuadrícula
+    # Crear una representación simple
     visual = [[0 for _ in range(model.width)] for _ in range(model.height)]
-    for (cell_contents, x, y) in model.grid.coord_iter():
-        for agent in cell_contents:
-            if isinstance(agent, Traffic_light):
+    for (x, y) in grid.coord_iter():
+        cell = grid.get_cell_list_contents([(x, y)])
+        for agent in cell:
+            if isinstance(agent, traffic_light.Traffic_light):
                 visual[y][x] = 2  # Semáforo
-            elif isinstance(agent, CarAgent):
+            elif isinstance(agent, car_agent.CarAgent):
                 visual[y][x] = 1  # Carro
     plt.imshow(visual, cmap='viridis', interpolation='nearest')
-    plt.xticks(range(model.width))
-    plt.yticks(range(model.height))
-    plt.grid(which='both', color='black', linewidth=1)
     plt.show()
 
 # Crear un modelo
 city = cityClass()
 
-# Plotear el modelo inicial
+# Ploatear el modelo inicial
 show_grid(city)
 
-# Ejecutar el modelo y visualizar cada paso
+# Ejecutar el modelo
 for i in range(10):
-    print(f"Paso {i+1}")
     city.step()
     show_grid(city)
