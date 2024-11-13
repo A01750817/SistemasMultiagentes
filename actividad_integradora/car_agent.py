@@ -6,7 +6,8 @@ class CarAgent(mesa.Agent):
     Clase que modela un carro como agente
     """
     def __init__(self, model, unique_id, pos):
-        super().__init_(model)
+        super().__init__(unique_id, model)
+        self.pos = pos
 
     def move(self):
         possible_movements = self.model.grid.get_neighborhood(
