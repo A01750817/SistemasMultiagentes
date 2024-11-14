@@ -57,7 +57,7 @@ def plot_grid(model, ax):
 # Run the model and plot
 city_model = cityClass(numberAgents=1, width=20, height=20)
 
-n_steps = 20
+n_steps = 30
 plt.ion()
 fig, ax = plt.subplots(figsize=(8, 8))
 
