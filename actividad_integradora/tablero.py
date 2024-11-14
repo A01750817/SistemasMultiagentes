@@ -23,10 +23,8 @@ edificios = [
 ]
 garajes = [(4,4), (4, 11), (2, 8), (8, 9), (9, 2), (10, 11), (11, 6), (17, 2), (20, 5), (20, 8), (18, 11), (3, 17), (10, 16), (4, 20), (8, 21), (17, 17), (21, 20)]
 
-# Function to plot the grid
-def plot_grid(model):
-    plt.figure(figsize=(8, 8))
-    ax = plt.gca()
+def plot_grid(model, ax):
+    ax.clear()
     ax.set_xlim(0, 24)
     ax.set_ylim(0, 24)
     ax.xaxis.tick_top()
@@ -56,20 +54,19 @@ def plot_grid(model):
                 circle = patches.Circle((x + 0.5, y + 0.5), 0.4, linewidth=1, edgecolor='black', facecolor=color)
                 ax.add_patch(circle)
 
-    plt.draw()
-    plt.pause(0.1)
-
 # Run the model and plot
 city_model = cityClass(numberAgents=1, width=20, height=20)
 
 n_steps = 20
 plt.ion()
+fig, ax = plt.subplots(figsize=(8, 8))
 
 for step in range(n_steps):
     city_model.step()
-    plot_grid(city_model)
+    plot_grid(city_model, ax)
+    plt.draw()
+    plt.pause(0.1)
 
 plt.ioff()
 plt.show()
-
 
