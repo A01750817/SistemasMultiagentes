@@ -3,7 +3,7 @@ from traffic_light import Traffic_light
 from car_agent import CarAgent
 
 class cityClass(mesa.Model):
-    def __init__(self, numberAgents=1, width=24, height=24):
+    def __init__(self, numberAgents=1, width=20, height=20):
         super().__init__()
         self.num_agents = numberAgents
         self.grid = mesa.space.MultiGrid(width, height, torus=False)
