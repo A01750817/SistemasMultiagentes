@@ -16,7 +16,8 @@ class cityClass(mesa.Model):
         self.create_agents()
 
     def create_traffic_lights(self):
-        traffic_light_positions = [(0, 4), (1, 4), (2, 5), (2, 6), (11, 18), (11, 19), (12, 17), (13, 17), (18, 2), (19, 2)]
+        traffic_light_positions = [(0, 4), (1, 4), (2, 5), (2, 6), (11, 18), (11, 19), (12, 17), (13, 17), (18, 2), 
+                                   (19, 2), (18, 17), (19, 17), (20, 0), (20, 1), (20, 18), (20, 19), (21, 6), (21, 7), (22, 8), (23, 8)]
         for i, pos in enumerate(traffic_light_positions):
             if pos[0] < self.width and pos[1] < self.height:
                 for agent in self.grid.get_cell_list_contents(pos):

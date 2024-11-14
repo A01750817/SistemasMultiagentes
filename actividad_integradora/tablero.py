@@ -21,7 +21,8 @@ edificios = [
     (16, 20), (16, 21), (17, 20), (17, 21), (20, 16), (20, 17), (21, 16), (21, 17), (20, 20), 
     (20, 21), (21, 21), (13, 13), (14, 13), (14, 14), (13, 14),
 ]
-garajes = [(4,4), (4, 11), (2, 8), (8, 9), (9, 2), (10, 11), (11, 6), (17, 2), (20, 5), (20, 8), (18, 11), (3, 17), (10, 16), (4, 20), (8, 21), (17, 17), (21, 20)]
+garajes = [(4,4), (4, 11), (2, 8), (8, 9), (9, 2), (10, 11), (11, 6), (17, 2), (20, 5), (20, 8), 
+           (18, 11), (3, 17), (10, 16), (4, 20), (8, 21), (17, 17), (21, 20)]
 
 def plot_grid(model, ax):
     ax.clear()
@@ -55,7 +56,7 @@ def plot_grid(model, ax):
                 ax.add_patch(circle)
 
 # Run the model and plot
-city_model = cityClass(numberAgents=1, width=20, height=20)
+city_model = cityClass(numberAgents=1, width=24, height=24)
 
 n_steps = 20
 plt.ion()
@@ -69,4 +70,3 @@ for step in range(n_steps):
 
 plt.ioff()
 plt.show()
-
