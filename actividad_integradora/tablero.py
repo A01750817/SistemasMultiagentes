@@ -7,8 +7,12 @@ def plot_grid(model):
     ax = plt.gca()
     ax.set_xlim(0, model.grid.width)
     ax.set_ylim(0, model.grid.height)
-    ax.set_xticks(range(model.grid.width))
-    ax.set_yticks(range(model.grid.height))
+    ax.xaxis.tick_top()
+    ax.set_xticks(range(1, model.grid.width + 1))
+    ax.set_xticklabels(range(1, model.grid.width + 1), ha='center')
+    ax.invert_yaxis()
+    ax.set_yticks(range(1, model.grid.height + 1))
+    ax.set_yticklabels(range(1, model.grid.height + 1), va='center')
     ax.grid(which="both")
 
     for cell, (x, y) in model.grid.coord_iter():
@@ -26,7 +30,7 @@ def plot_grid(model):
 
 # Inicializar y simular el modelo
 city_model = cityClass()
-for _ in range(10):  # Ejecutar 10 pasos de simulación
+for _ in range(1000):  # Ejecutar 10 pasos de simulación
     city_model.step()
     plot_grid(city_model)
 

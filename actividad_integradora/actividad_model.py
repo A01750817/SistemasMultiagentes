@@ -32,7 +32,7 @@ class Traffic_light(mesa.Agent):
             self.timer = 0
 
 class cityClass(mesa.Model):
-    def __init__(self, numberAgents=1, width=24, height=24):
+    def __init__(self, numberAgents=1, width=25, height=25):
         super().__init__()
         self.num_agents = numberAgents
         self.grid = mesa.space.MultiGrid(width, height, torus=False)
@@ -51,7 +51,7 @@ class cityClass(mesa.Model):
             self.schedule.add(car)
 
     def create_traffic_lights(self):
-        for i, pos in enumerate([(1, 4), (2, 4)], start=1):
+        for i, pos in enumerate([(0, 5), (1, 5), (2,6), (2,7), (12, 19), (12, 20), (13, 18), (14, 18), (19, 3), (20, 3), (21, 1), (21, 2), (22, 7), (22, 8), (23, 9), (24, 9), (19, 18), (20, 18), (21, 19), (21, 20)], start=1):
             # Limpia agentes en la posición actual si ya existen
             for agent in self.grid.get_cell_list_contents(pos):
                 self.grid.remove_agent(agent)
