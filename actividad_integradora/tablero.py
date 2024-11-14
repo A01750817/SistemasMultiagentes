@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from actividad_model import cityClass, CarAgent, Traffic_light
 
+edificios = [(2, 3), (2, 4), (2, 5), (3, 3), (3, 4), (3, 5), (4, 3), (4, 4), (4, 5), (5, 3), (5, 4), (5, 5)]
+
 def plot_grid(model):
     plt.figure(figsize=(8, 8))
     ax = plt.gca()
@@ -14,6 +16,10 @@ def plot_grid(model):
     ax.set_yticks(range(1, model.grid.height + 1))
     ax.set_yticklabels(range(1, model.grid.height + 1), va='center')
     ax.grid(which="both")
+
+    for (x, y) in edificios:
+        rect = patches.Rectangle((x, y), 1, 1, linewidth=1, edgecolor='black', facecolor='blue')
+        ax.add_patch(rect)
 
     for cell, (x, y) in model.grid.coord_iter():
         cell_content = model.grid.get_cell_list_contents((x, y))

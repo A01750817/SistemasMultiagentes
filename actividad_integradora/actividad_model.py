@@ -11,8 +11,12 @@ class CarAgent(mesa.Agent):
             moore=False,
             include_center=False
         )
-        new_position = self.random.choice(possible_movements)
-        self.model.grid.move_agent(self, new_position)
+
+        valid_movements = [pos for pos in possible_movements if pos not in self.model.edificios]
+
+        if valid_movements:
+            new_position = self.random.choice(valid_movements)
+            self.model.grid.move_agent(self, new_position)
 
     def step(self):
         self.move()
@@ -37,6 +41,7 @@ class cityClass(mesa.Model):
         self.num_agents = numberAgents
         self.grid = mesa.space.MultiGrid(width, height, torus=False)
         self.schedule = mesa.time.RandomActivation(self)
+        self.edificios = [(2, 3), (2, 4), (2, 5), (3, 3), (3, 4), (3, 5), (4, 3), (4, 4), (4, 5), (5, 3), (5, 4), (5, 5)]
         self.create_agents()
         self.create_traffic_lights()
 
