@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from actividad_model import cityClass
+from actividad_model import CarAgent
+from actividad_model import Traffic_light
+
 
 def plot_grid(model):
     plt.figure(figsize=(8, 8))
