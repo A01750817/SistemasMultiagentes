@@ -2,8 +2,9 @@ import mesa
 
 class Traffic_light(mesa.Agent):
     def __init__(self, model, unique_id, pos, timer_interval=5):
-        super().__init__(model)
+        super().__init__(model, unique_id)
         self.state = False
+        self.pos = pos
         self.timer = 0
         self.timer_interval = timer_interval
 

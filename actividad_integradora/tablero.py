@@ -1,31 +1,31 @@
-from model_city import cityClass  
-import car_agent
-import traffic_light
-import matplotlib.pyplot as plt  
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from actividad_model import cityClass
 
-def show_grid(model):
-    grid = model.grid
-    # Mesa no tiene un método render() por defecto para SingleGrid, necesitarás definirlo
-    grid_data = grid.grid  # Obtiene la cuadrícula
-    # Crear una representación simple
-    visual = [[0 for _ in range(model.width)] for _ in range(model.height)]
-    for (x, y) in grid.coord_iter():
-        cell = grid.get_cell_list_contents([(x, y)])
-        for agent in cell:
-            if isinstance(agent, traffic_light.Traffic_light):
-                visual[y][x] = 2  # Semáforo
-            elif isinstance(agent, car_agent.CarAgent):
-                visual[y][x] = 1  # Carro
-    plt.imshow(visual, cmap='viridis', interpolation='nearest')
+def plot_grid(model):
+    plt.figure(figsize=(8, 8))
+    ax = plt.gca()
+    ax.set_xlim(0, model.grid.width)
+    ax.set_ylim(0, model.grid.height)
+    ax.set_xticks(range(model.grid.width))
+    ax.set_yticks(range(model.grid.height))
+    ax.grid(which="both")
+    
+    for (x, y) in model.grid.coord_iter():
+        cell_content = model.grid.get_cell_list_contents((x, y))
+        for obj in cell_content:
+            if isinstance(obj, CarAgent):
+                rect = patches.Rectangle((x, y), 1, 1, linewidth=1, edgecolor='black', facecolor='blue')
+                ax.add_patch(rect)
+            elif isinstance(obj, Traffic_light):
+                color = 'green' if obj.state else 'red'
+                circle = patches.Circle((x + 0.5, y + 0.5), 0.4, linewidth=1, edgecolor='black', facecolor=color)
+                ax.add_patch(circle)
+
     plt.show()
 
-# Crear un modelo
-city = cityClass()
-
-# Ploatear el modelo inicial
-show_grid(city)
-
-# Ejecutar el modelo
-for i in range(10):
-    city.step()
-    show_grid(city)
+# Crear una instancia del modelo y ejecutar algunos pasos
+city_model = cityClass()
+for _ in range(10):  # Ejecuta 10 pasos de simulación
+    city_model.step()
+    plot_grid(city_model)
