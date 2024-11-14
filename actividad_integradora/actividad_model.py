@@ -1,70 +1,37 @@
 import mesa
-
-class CarAgent(mesa.Agent):
-    def __init__(self, model, unique_id, pos):
-        super().__init__(unique_id, model)
-        self.pos = pos
-
-    def move(self):
-        possible_movements = self.model.grid.get_neighborhood(
-            self.pos,
-            moore=False,
-            include_center=False
-        )
-
-        valid_movements = [pos for pos in possible_movements if pos not in self.model.edificios]
-
-        if valid_movements:
-            new_position = self.random.choice(valid_movements)
-            self.model.grid.move_agent(self, new_position)
-
-    def step(self):
-        self.move()
-
-class Traffic_light(mesa.Agent):
-    def __init__(self, model, unique_id, pos, timer_interval=5):
-        super().__init__(unique_id, model)
-        self.state = False
-        self.pos = pos
-        self.timer = 0
-        self.timer_interval = timer_interval
-
-    def step(self):
-        self.timer += 1
-        if self.timer >= self.timer_interval:
-            self.state = not self.state
-            self.timer = 0
+from traffic_light import Traffic_light
+from car_agent import CarAgent
 
 class cityClass(mesa.Model):
-    def __init__(self, numberAgents=1, width=25, height=25):
+    def __init__(self, numberAgents=1, width=20, height=20):
         super().__init__()
         self.num_agents = numberAgents
         self.grid = mesa.space.MultiGrid(width, height, torus=False)
         self.schedule = mesa.time.RandomActivation(self)
-        self.edificios = [(2, 3), (2, 4), (2, 5), (3, 3), (3, 4), (3, 5), (4, 3), (4, 4), (4, 5), (5, 3), (5, 4), (5, 5), (6, 3), (6, 4), (6, 5)]
-        self.estacionamientos = [(5, 5)]
-        self.create_agents()
+        self.running = True
+        self.width = width
+        self.height = height
         self.create_traffic_lights()
+        self.create_agents()
+
+    def create_traffic_lights(self):
+        traffic_light_positions = [(1, 4), (2, 4)]
+        for i, pos in enumerate(traffic_light_positions):
+            if pos[0] < self.width and pos[1] < self.height:
+                for agent in self.grid.get_cell_list_contents(pos):
+                    self.grid.remove_agent(agent)
+                semaforo = Traffic_light(100 + i + 1, self, pos, timer_interval=5)
+                self.grid.place_agent(semaforo, pos)
+                self.schedule.add(semaforo)
 
     def create_agents(self):
         for i in range(self.num_agents):
-            pos = (self.random.randrange(self.grid.width), self.random.randrange(self.grid.height))
-            # Limpia agentes en la posición actual si ya existen
+            pos = (self.random.randrange(self.width), self.random.randrange(self.height))
             for agent in self.grid.get_cell_list_contents(pos):
                 self.grid.remove_agent(agent)
             car = CarAgent(self, i, pos)
             self.grid.place_agent(car, pos)
             self.schedule.add(car)
 
-    def create_traffic_lights(self):
-        for i, pos in enumerate([(0, 4), (1, 4), (2,5), (2,6), (12, 17), (11, 18), (11, 19), (13, 17), (18, 2), (19, 2), (20, 0), (20, 1), (21, 6), (21, 7), (22, 8), (23, 8), (24, 9), (18, 17), (19, 17), (20, 18), (20, 19)], start=1):
-            # Limpia agentes en la posición actual si ya existen
-            for agent in self.grid.get_cell_list_contents(pos):
-                self.grid.remove_agent(agent)
-            semaforo = Traffic_light(self, 100 + i, pos, timer_interval=5)
-            self.grid.place_agent(semaforo, pos)
-            self.schedule.add(semaforo)
-
     def step(self):
         self.schedule.step()
-

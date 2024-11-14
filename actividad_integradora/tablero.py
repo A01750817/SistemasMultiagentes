@@ -70,12 +70,26 @@ def plot_grid(model):
                 circle = patches.Circle((x + 0.5, y + 0.5), 0.4, linewidth=1, edgecolor='black', facecolor=color)
                 ax.add_patch(circle)
 
-    plt.show()
+    plt.draw()
+    plt.pause(0.1)
 
-# Inicializar y simular el modelo
-city_model = cityClass()
-for _ in range(1000):  # Ejecutar 10 pasos de simulación
+# Crear una instancia del modelo y ejecutar algunos pasos
+city_model = cityClass(numberAgents=10, width=20, height=20)
+
+# Número de pasos a ejecutar
+n_steps = 20
+
+# Configurar la visualización interactiva
+plt.ion()
+fig, ax = plt.subplots(figsize=(8, 8))
+
+# Ejecutar el modelo y mostrar el tablero en cada paso
+for step in range(n_steps):
     city_model.step()
-    plot_grid(city_model)
+    plot_grid(city_model, 20, 20, ax)
+    ax.set_title(f"Paso: {step + 1}", fontsize=16, fontweight='bold', color='slategray')
+
+plt.ioff()
+plt.show()
 
 
