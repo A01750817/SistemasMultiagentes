@@ -24,14 +24,13 @@ edificios = [
 garajes = [(4,4), (4, 11), (2, 8), (8, 9), (9, 2), (10, 11), (11, 6), (17, 2), (20, 5), (20, 8), 
            (18, 11), (3, 17), (10, 16), (4, 20), (8, 21), (17, 17), (21, 20)]
 
-# Direcciones
+# Direcciones (ya definidas en actividad_model.py)
 direcciones_izquierda = [
     [(x, y) for x in range(24) for y in range(0,2)],
     [(x, y) for x in range(2,6) for y in range(5,7)],
     [(x, y) for x in range(2,12) for y in range(12,14)],
     [(x, y) for x in range(16,22) for y in range(12,14)],
     [(x, y) for x in range(16,22) for y in range(18,20)]
-
 ]
 
 direcciones_derecha = [
@@ -48,31 +47,29 @@ direcciones_abajo = [
     [(x, y) for x in range(12, 14) for y in range(2, 12)],
     [(x, y) for x in range(12, 14) for y in range(16, 22)],
     [(x, y) for x in range(18, 20) for y in range(16, 22)],
-
 ]
 
 direcciones_arriba = [
     [(x, y) for x in range(14, 16) for y in range(2, 12)],
     [(x, y) for x in range(14, 16) for y in range(16, 22)],
     [(x, y) for x in range(18, 20) for y in range(2, 6)],
-    [(x, y) for x in range(22, 24) for y in range(24)],
+    [(x, y) for x in range(22, 24) for y in range(23,24)],  # Ajuste: range(24) -> range(23,24)
 ]
-
 
 def plot_grid(model, ax):
     ax.clear()
-    ax.set_xlim(0, 24)
-    ax.set_ylim(0, 24)
+    ax.set_xlim(0, model.width)
+    ax.set_ylim(0, model.height)
     ax.xaxis.tick_top()
-    ax.set_xticks(range(1, 25))
-    ax.set_xticklabels(range(1, 25), ha='center')
+    ax.set_xticks(range(model.width))
+    ax.set_xticklabels(range(1, model.width + 1), ha='center')
     ax.invert_yaxis()
-    ax.set_yticks(range(1, 25))
-    ax.set_yticklabels(range(1, 25), va='center')
+    ax.set_yticks(range(model.height))
+    ax.set_yticklabels(range(1, model.height + 1), va='center')
     ax.grid(which="both")
 
     # Dibujar edificios
-    for (x, y) in edificios:
+    for (x, y) in model.celdas_restringidas:
         rect = patches.Rectangle((x, y), 1, 1, linewidth=1, edgecolor='black', facecolor='blue')
         ax.add_patch(rect)
 
@@ -83,24 +80,29 @@ def plot_grid(model, ax):
 
     # Colores para direcciones
     colores_direcciones = {
-        'izquierda': 'red',
-        'derecha': 'green',
-        'abajo': 'cyan',
-        'arriba': 'magenta',
+        'left': 'red',
+        'right': 'green',
+        'down': 'cyan',
+        'up': 'magenta',
     }
 
-    # Dibujar direcciones
-    for direccion, color in zip(
-        [direcciones_izquierda, direcciones_derecha, direcciones_abajo, direcciones_arriba],
-        [colores_direcciones['izquierda'], colores_direcciones['derecha'],
-         colores_direcciones['abajo'], colores_direcciones['arriba']]
-    ):
-        for path in direccion:
-            for (x, y) in path:
-                rect = patches.Rectangle((x, y), 1, 1, linewidth=0.5, edgecolor='none', facecolor=color, alpha=0.3)
-                ax.add_patch(rect)
+    # Dibujar direcciones permitidas
+    for pos, directions in model.direcciones_permitidas.items():
+        for direction in directions:
+            if direction == 'left':
+                dx, dy = -0.45, 0.5
+                ax.annotate("<-", (pos[0]+dx, pos[1]+dy), color=colores_direcciones[direction], fontsize=8, ha='center')
+            elif direction == 'right':
+                dx, dy = 0.45, 0.5
+                ax.annotate("->", (pos[0]+1+dx, pos[1]+dy), color=colores_direcciones[direction], fontsize=8, ha='center')
+            elif direction == 'up':
+                dx, dy = 0.5, -0.45
+                ax.annotate("^", (pos[0]+dx, pos[1]+dy), color=colores_direcciones[direction], fontsize=8, ha='center')
+            elif direction == 'down':
+                dx, dy = 0.5, 0.45
+                ax.annotate("v", (pos[0]+dx, pos[1]+1+dy), color=colores_direcciones[direction], fontsize=8, ha='center')
 
-    # Dibujar agentes
+    # Dibujar semáforos y agentes
     for cell, (x, y) in model.grid.coord_iter():
         cell_content = model.grid.get_cell_list_contents((x, y))
         for obj in cell_content:
@@ -115,7 +117,7 @@ def plot_grid(model, ax):
 # Run the model and plot
 city_model = cityClass(numberAgents=1, width=24, height=24)
 
-n_steps = 20
+n_steps = 100
 plt.ion()
 fig, ax = plt.subplots(figsize=(8, 8))
 
@@ -127,3 +129,27 @@ for step in range(n_steps):
 
 plt.ioff()
 plt.show()
+
+
+
+
+        # coordenadas = [
+#     # Primer bloque
+#     [(x, y) for x in range(2, 6) for y in range(2, 5)],
+#     [(x, y) for x in range(2, 6) for y in range(7, 12) if not (x == 4 and y == 11)],
+#     # Segundo bloque
+#     [(x, y) for x in range(8, 12) for y in range(2, 12) if not (x == 8 and y == 9)],
+#     # Tercer bloque
+#     [(x, y) for x in range(16, 18) for y in range(2, 6)],
+#     [(x, y) for x in range(20, 22) for y in range(2, 6)],
+#     [(x, y) for x in range(16, 22) for y in range(8, 12)],
+#     # Cuarto bloque
+#     [(x, y) for x in range(2, 12) for y in range(16, 18) if not (x == 10 and y == 16)],
+#     [(x, y) for x in range(2, 12) for y in range(20, 22) if not (x == 10 and y == 20)],
+#     # Último bloque
+#     [(x, y) for x in range(13, 15) for y in range(13, 15)]
+# ]
+
+# # Aplanar la lista de listas
+# coordenadas = [item for sublist in coordenadas for item in sublist]
+# print(coordenadas)
