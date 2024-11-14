@@ -1,9 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from actividad_model import cityClass
-from actividad_model import CarAgent
-from actividad_model import Traffic_light
-
+from actividad_model import cityClass, CarAgent, Traffic_light
 
 def plot_grid(model):
     plt.figure(figsize=(8, 8))
@@ -13,8 +10,9 @@ def plot_grid(model):
     ax.set_xticks(range(model.grid.width))
     ax.set_yticks(range(model.grid.height))
     ax.grid(which="both")
-    
-    for (x, y) in model.grid.coord_iter():
+
+    # Ajuste en la desestructuración de coord_iter()
+    for cell, (x, y) in model.grid.coord_iter():  # Asegura una correcta desestructuración de tuplas
         cell_content = model.grid.get_cell_list_contents((x, y))
         for obj in cell_content:
             if isinstance(obj, CarAgent):
@@ -27,8 +25,10 @@ def plot_grid(model):
 
     plt.show()
 
-# Crear una instancia del modelo y ejecutar algunos pasos
+# Inicializar y simular el modelo
 city_model = cityClass()
-for _ in range(10):  # Ejecuta 10 pasos de simulación
+for _ in range(10):  # Ejecutar 10 pasos de simulación
     city_model.step()
     plot_grid(city_model)
+
+
