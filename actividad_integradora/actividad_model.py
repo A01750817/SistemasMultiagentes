@@ -22,7 +22,7 @@ class cityClass(mesa.Model):
             if pos[0] < self.width and pos[1] < self.height:
                 for agent in self.grid.get_cell_list_contents(pos):
                     self.grid.remove_agent(agent)
-                semaforo = Traffic_light(self, 100 + i + 1, pos, timer_interval=5)
+                semaforo = Traffic_light(self, 100 + i + 1, pos, timer_interval = 10)
                 self.grid.place_agent(semaforo, pos)
                 self.schedule.add(semaforo)
                 self.traffic_lights.append(semaforo)
