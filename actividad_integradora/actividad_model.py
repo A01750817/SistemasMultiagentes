@@ -57,7 +57,7 @@ class cityClass(mesa.Model):
             self.schedule.add(car)
 
     def create_traffic_lights(self):
-        for i, pos in enumerate([(0, 5), (1, 5), (2,6), (2,7), (12, 19), (12, 20), (13, 18), (14, 18), (19, 3), (20, 3), (21, 1), (21, 2), (22, 7), (22, 8), (23, 9), (24, 9), (19, 18), (20, 18), (21, 19), (21, 20)], start=1):
+        for i, pos in enumerate([(0, 4), (1, 4), (2,5), (2,6), (12, 17), (11, 18), (11, 19), (13, 17), (18, 2), (19, 2), (20, 0), (20, 1), (21, 6), (21, 7), (22, 8), (23, 8), (24, 9), (18, 17), (19, 17), (20, 18), (20, 19)], start=1):
             # Limpia agentes en la posición actual si ya existen
             for agent in self.grid.get_cell_list_contents(pos):
                 self.grid.remove_agent(agent)
