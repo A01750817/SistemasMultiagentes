@@ -11,8 +11,7 @@ def plot_grid(model):
     ax.set_yticks(range(model.grid.height))
     ax.grid(which="both")
 
-    # Ajuste en la desestructuración de coord_iter()
-    for cell, (x, y) in model.grid.coord_iter():  # Asegura una correcta desestructuración de tuplas
+    for cell, (x, y) in model.grid.coord_iter():
         cell_content = model.grid.get_cell_list_contents((x, y))
         for obj in cell_content:
             if isinstance(obj, CarAgent):
