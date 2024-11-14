@@ -24,6 +24,8 @@ edificios = [
 garajes = [(4,4), (4, 11), (2, 8), (8, 9), (9, 2), (10, 11), (11, 6), (17, 2), (20, 5), (20, 8), 
            (18, 11), (3, 17), (10, 16), (4, 20), (8, 21), (17, 17), (21, 20)]
 
+direcciones_abajo = [(x, y) for x in range(2) for y in range(24)]
+
 def plot_grid(model, ax):
     ax.clear()
     ax.set_xlim(0, 24)
@@ -58,7 +60,7 @@ def plot_grid(model, ax):
 # Run the model and plot
 city_model = cityClass(numberAgents=1, width=24, height=24)
 
-n_steps = 100
+n_steps = 20
 plt.ion()
 fig, ax = plt.subplots(figsize=(8, 8))
 
