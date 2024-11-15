@@ -24,6 +24,16 @@ edificios = [
 garajes = [(4,4), (4, 11), (2, 8), (8, 9), (9, 2), (10, 11), (11, 6), (17, 2), (20, 5), (20, 8), 
            (18, 11), (3, 17), (10, 16), (4, 20), (8, 21), (17, 17), (21, 20)]
 
+# Define intersections with turn directions
+intersections = {
+    (6, 6): ['left', 'down'],     # Example intersection: allows turning left and going down
+    (6, 12): ['down', 'right'],    # Another intersection allowing down and right turns
+    (12, 6): ['up', 'right'],      # Intersection allowing up and right turns
+    (12, 18): ['down', 'left'],    # Intersection allowing down and left turns
+    (18, 12): ['up', 'right'],     # Intersection allowing up and right turns
+    # Add additional intersections here based on the map layout
+}
+
 # Direcciones (ya definidas en actividad_model.py)
 direcciones_izquierda = [
     [(x, y) for x in range(25) for y in range(0,2)],
@@ -51,7 +61,7 @@ direcciones_abajo = [
 
 direcciones_arriba = [
     [(x, y) for x in range(22, 24) for y in range(0, 25)],
-    [(x, y) for x in range(14, 16) for y in range(3, 13)],
+    [(x, y) for x in range(14, 16) for y in range(2, 14)],
     [(x, y) for x in range(14, 16) for y in range(17, 23)],
     [(x, y) for x in range(18, 20) for y in range(3, 7)],
 ]
@@ -115,9 +125,18 @@ def plot_grid(model, ax):
                 ax.add_patch(circle)
 
 # Run the model and plot
-city_model = cityClass(numberAgents=1, width=24, height=24)
+city_model = cityClass(numberAgents=18, width=24, height=24)
 
-n_steps = 100
+
+# Integrate intersection turns into model directions
+for pos, directions in intersections.items():
+    if pos in city_model.direcciones_permitidas:
+        city_model.direcciones_permitidas[pos].extend(directions)
+    else:
+        city_model.direcciones_permitidas[pos] = directions
+
+
+n_steps = 300
 plt.ion()
 fig, ax = plt.subplots(figsize=(8, 8))
 
@@ -129,27 +148,3 @@ for step in range(n_steps):
 
 plt.ioff()
 plt.show()
-
-
-
-
-        # coordenadas = [
-#     # Primer bloque
-#     [(x, y) for x in range(2, 6) for y in range(2, 5)],
-#     [(x, y) for x in range(2, 6) for y in range(7, 12) if not (x == 4 and y == 11)],
-#     # Segundo bloque
-#     [(x, y) for x in range(8, 12) for y in range(2, 12) if not (x == 8 and y == 9)],
-#     # Tercer bloque
-#     [(x, y) for x in range(16, 18) for y in range(2, 6)],
-#     [(x, y) for x in range(20, 22) for y in range(2, 6)],
-#     [(x, y) for x in range(16, 22) for y in range(8, 12)],
-#     # Cuarto bloque
-#     [(x, y) for x in range(2, 12) for y in range(16, 18) if not (x == 10 and y == 16)],
-#     [(x, y) for x in range(2, 12) for y in range(20, 22) if not (x == 10 and y == 20)],
-#     # Último bloque
-#     [(x, y) for x in range(13, 15) for y in range(13, 15)]
-# ]
-
-# # Aplanar la lista de listas
-# coordenadas = [item for sublist in coordenadas for item in sublist]
-# print(coordenadas)

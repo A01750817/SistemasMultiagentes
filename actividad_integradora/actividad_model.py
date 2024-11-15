@@ -12,7 +12,8 @@ class cityClass(mesa.Model):
         self.width = width
         self.height = height
         self.traffic_lights = []
-
+        self.garajes = [(4,4), (4, 11), (2, 8), (8, 9), (9, 2), (10, 11), (11, 6), (17, 2), (20, 5), (20, 8), 
+           (18, 11), (3, 17), (10, 16), (4, 20), (8, 21), (17, 17), (21, 20)]
         # Define restricted cells (buildings, garages, etc.)
         self.celdas_restringidas = [
             (2, 2), (2, 3), (2, 4), (3, 2), (3, 3), (3, 4), (4, 2), (4, 3), (4, 4), (5, 2), (5, 3), (5, 4),
@@ -60,7 +61,7 @@ class cityClass(mesa.Model):
 
         direcciones_arriba = [
             [(x, y) for x in range(22, 24) for y in range(0, 25)],
-            [(x, y) for x in range(14, 16) for y in range(3, 13)],
+            [(x, y) for x in range(14, 16) for y in range(2, 14)],
             [(x, y) for x in range(14, 16) for y in range(17, 23)],
             [(x, y) for x in range(18, 20) for y in range(3, 7)],
         ]
@@ -76,6 +77,7 @@ class cityClass(mesa.Model):
         self.create_traffic_lights()
         self.create_agents()
 
+        
     def _populate_allowed_directions(self, direction_lists, direction):
         for sublist in direction_lists:
             for pos in sublist:
@@ -99,13 +101,20 @@ class cityClass(mesa.Model):
     def create_agents(self):
         for i in range(self.num_agents):
             while True:
+                # Generar posición inicial aleatoria
                 pos = (self.random.randrange(self.width), self.random.randrange(self.height))
                 if pos not in self.celdas_restringidas and self.grid.is_cell_empty(pos):
                     break
+
+            # Asignar un destino aleatorio de los garajes
+            destination = self.random.choice(self.garajes)
+
+            # Crear el agente de carro con su destino
             traffic_light_ref = self.traffic_lights[i % len(self.traffic_lights)]
-            car = CarAgent(self, i, pos, traffic_light_ref)
+            car = CarAgent(self, i, pos, traffic_light_ref, destination)
             self.grid.place_agent(car, pos)
             self.schedule.add(car)
+
 
     def step(self):
         self.schedule.step()
