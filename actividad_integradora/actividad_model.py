@@ -1,5 +1,3 @@
-# FILE: actividad_model.py
-
 import mesa
 from car_agent import CarAgent
 from traffic_light import Traffic_light

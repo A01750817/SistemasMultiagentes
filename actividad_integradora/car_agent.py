@@ -1,5 +1,3 @@
-# FILE: car_agent.py
-
 import mesa
 from traffic_light import Traffic_light  # Importando Traffic_light
 
