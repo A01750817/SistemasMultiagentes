@@ -57,6 +57,7 @@ class cityClass(mesa.Model):
             [(x, y) for x in range(12, 14) for y in range(0, 12)],
             [(x, y) for x in range(12, 14) for y in range(14, 22)],
             [(x, y) for x in range(18, 20) for y in range(14, 22)],
+            [(9, 1)]
         ]
 
         direcciones_arriba = [
@@ -64,6 +65,7 @@ class cityClass(mesa.Model):
             [(x, y) for x in range(14, 16) for y in range(2, 14)],
             [(x, y) for x in range(14, 16) for y in range(16, 24)],
             [(x, y) for x in range(18, 20) for y in range(2, 8)],
+            [(9, 1)]
         ]
 
         # Create allowed directions dictionary
@@ -107,7 +109,7 @@ class cityClass(mesa.Model):
                     break
 
             # Asignar un destino aleatorio de los garajes
-            destination = (8, 21)
+            destination = (9, 2)
 
             # Crear el agente de carro con su destino
             traffic_light_ref = self.traffic_lights[i % len(self.traffic_lights)]
