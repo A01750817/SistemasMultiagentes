@@ -32,7 +32,7 @@ direcciones_izquierda = [
     [(x, y) for x in range(16,22) for y in range(12,14)],
     [(x, y) for x in range(16,22) for y in range(18,20)]
 ]
-
+#direcciones derecha
 direcciones_derecha = [
     [(x, y) for x in range(2,12) for y in range(14,16)],
     [(x, y) for x in range(2,12) for y in range(18,20)],
