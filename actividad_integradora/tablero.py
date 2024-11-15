@@ -27,15 +27,15 @@ garajes = [(4,4), (4, 11), (2, 8), (8, 9), (9, 2), (10, 11), (11, 6), (17, 2), (
 # Direcciones (ya definidas en actividad_model.py)
 direcciones_izquierda = [
     [(x, y) for x in range(25) for y in range(0,2)],
-    [(x, y) for x in range(2,6) for y in range(5,7)],
-    [(x, y) for x in range(2,12) for y in range(12,14)],
-    [(x, y) for x in range(16,22) for y in range(12,14)],
-    [(x, y) for x in range(16,22) for y in range(18,20)]
+    [(x, y) for x in range(2,8) for y in range(5,7)],
+    [(x, y) for x in range(2,14) for y in range(12,14)],
+    [(x, y) for x in range(16,24) for y in range(12,14)],
+    [(x, y) for x in range(16,24) for y in range(18,20)]
 ]
 #direcciones derecha
 direcciones_derecha = [
-    [(x, y) for x in range(2,12) for y in range(14,16)],
-    [(x, y) for x in range(2,12) for y in range(18,20)],
+    [(x, y) for x in range(0,12) for y in range(14,16)],
+    [(x, y) for x in range(0,12) for y in range(18,20)],
     [(x, y) for x in range(16,22) for y in range(14,16)],
     [(x, y) for x in range(16,22) for y in range(6,8)],
     [(x, y) for x in range(-1, 24) for y in range(22,24)]
@@ -43,17 +43,17 @@ direcciones_derecha = [
 
 direcciones_abajo = [
     [(x, y) for x in range(2) for y in range(-1, 24)],
-    [(x, y) for x in range(6, 8) for y in range(2, 12)],
-    [(x, y) for x in range(12, 14) for y in range(2, 12)],
-    [(x, y) for x in range(12, 14) for y in range(16, 22)],
-    [(x, y) for x in range(18, 20) for y in range(16, 22)],
+    [(x, y) for x in range(6, 8) for y in range(0, 12)],
+    [(x, y) for x in range(12, 14) for y in range(0, 12)],
+    [(x, y) for x in range(12, 14) for y in range(15, 22)],
+    [(x, y) for x in range(18, 20) for y in range(15, 22)],
 ]
 
 direcciones_arriba = [
     [(x, y) for x in range(22, 23) for y in range(0, 25)],
     [(x, y) for x in range(23, 24) for y in range(0, 25)],
     [(x, y) for x in range(14, 16) for y in range(2, 12)],
-    [(x, y) for x in range(14, 16) for y in range(16, 22)],
+    [(x, y) for x in range(14, 16) for y in range(15, 22)],
     [(x, y) for x in range(18, 20) for y in range(2, 6)],
     [(x, y) for x in range(22, 24) for y in range(23,24)],  # Ajuste: range(24) -> range(23,24)
 ]
