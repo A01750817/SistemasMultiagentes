@@ -1,6 +1,7 @@
 # FILE: car_agent.py
 
 import mesa
+from traffic_light import Traffic_light  # Importando Traffic_light
 
 class CarAgent(mesa.Agent):
     """
@@ -10,6 +11,7 @@ class CarAgent(mesa.Agent):
         super().__init__(unique_id, model)
         self.pos = pos
         self.traffic_light = traffic_light
+        self.last_direction = None  # Almacenar la última dirección de movimiento
 
     def get_allowed_directions(self):
         """
@@ -61,22 +63,42 @@ class CarAgent(mesa.Agent):
         # Mover al agente
         self.model.grid.move_agent(self, new_position)
         self.pos = new_position
+        self.last_direction = direction  # Actualizar la última dirección de movimiento
         print(f"Agente {self.unique_id} se movió a {self.pos}")
 
     def is_stop(self):
-        # Obtener posiciones adyacentes al semáforo
-        adjacent_positions = self.model.grid.get_neighborhood(
-            self.traffic_light.pos,
-            moore=False,
-            include_center=False
-        )
-        
-        # Detenerse solo si el semáforo está en rojo y el coche está en una posición adyacente al semáforo
-        if not self.traffic_light.state and self.pos in adjacent_positions:
-            print(f"Agente {self.unique_id} detenido en {self.pos}")
-        else:
+        # Definir los puntos relevantes según la dirección de movimiento
+        direction_vectors = {
+            'left': [(-1, 0), (0, -1), (0, 1)],  # Oeste, Norte, Sur
+            'right': [(1, 0), (0, -1), (0, 1)],  # Este, Norte, Sur
+            'up': [(0, -1), (-1, 0), (1, 0)],  # Norte, Oeste, Este
+            'down': [(0, 1), (-1, 0), (1, 0)],  # Sur, Oeste, Este
+        }
+
+        if not self.last_direction:
+            # Si no hay dirección previa (agente recién colocado), moverse sin restricciones
             self.move()
-            print(f"Agente {self.unique_id} en movimiento a {self.pos}")
+            return
+
+        # Obtener los vectores relevantes para la dirección actual
+        relevant_vectors = direction_vectors.get(self.last_direction, [])
+        relevant_positions = [
+            (self.pos[0] + vec[0], self.pos[1] + vec[1]) for vec in relevant_vectors
+        ]
+
+        # Verificar si hay un semáforo en rojo en las posiciones relevantes
+        for pos in relevant_positions:
+            if not (0 <= pos[0] < self.model.width and 0 <= pos[1] < self.model.height):
+                continue  # Ignorar posiciones fuera del grid
+            cell_contents = self.model.grid.get_cell_list_contents(pos)
+            for agent in cell_contents:
+                if isinstance(agent, Traffic_light) and not agent.state:  # Semáforo en rojo
+                    print(f"Agente {self.unique_id} detenido por semáforo rojo en {pos}")
+                    return
+
+        # Si no hay semáforos en rojo en las posiciones relevantes, moverse
+        self.move()
+        print(f"Agente {self.unique_id} en movimiento a {self.pos}")
 
     def step(self):
         self.is_stop()
