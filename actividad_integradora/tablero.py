@@ -24,46 +24,46 @@ edificios = [
 garajes = [(4,4), (4, 11), (2, 8), (8, 9), (9, 2), (10, 11), (11, 6), (17, 2), (20, 5), (20, 8), 
            (18, 11), (3, 17), (10, 16), (4, 20), (8, 21), (17, 17), (21, 20)]
 
-# Define intersections with turn directions
-intersections = {
-    (6, 6): ['left', 'down'],     # Example intersection: allows turning left and going down
-    (6, 12): ['down', 'right'],    # Another intersection allowing down and right turns
-    (12, 6): ['up', 'right'],      # Intersection allowing up and right turns
-    (12, 18): ['down', 'left'],    # Intersection allowing down and left turns
-    (18, 12): ['up', 'right'],     # Intersection allowing up and right turns
-    # Add additional intersections here based on the map layout
-}
+# # Define intersections with turn directions
+# intersections = {
+#     (6, 6): ['left', 'down'],     # Example intersection: allows turning left and going down
+#     (6, 12): ['down', 'right'],    # Another intersection allowing down and right turns
+#     (12, 6): ['up', 'right'],      # Intersection allowing up and right turns
+#     (12, 18): ['down', 'left'],    # Intersection allowing down and left turns
+#     (18, 12): ['up', 'right'],     # Intersection allowing up and right turns
+#     # Add additional intersections here based on the map layout
+# }
 
 # Direcciones (ya definidas en actividad_model.py)
 direcciones_izquierda = [
     [(x, y) for x in range(25) for y in range(0,2)],
-    [(x, y) for x in range(3,7) for y in range(5,7)],
-    [(x, y) for x in range(3,13) for y in range(12,14)],
-    [(x, y) for x in range(17,23) for y in range(12,14)],
-    [(x, y) for x in range(17,23) for y in range(18,20)]
+    [(x, y) for x in range(2,8) for y in range(5,7)],
+    [(x, y) for x in range(2,14) for y in range(12,14)],
+    [(x, y) for x in range(16,24) for y in range(12,14)],
+    [(x, y) for x in range(16,24) for y in range(18,20)]
 ]
 #direcciones derecha
 direcciones_derecha = [
-    [(x, y) for x in range(1,11) for y in range(14,16)],
-    [(x, y) for x in range(1,11) for y in range(18,20)],
-    [(x, y) for x in range(15,21) for y in range(14,16)],
-    [(x, y) for x in range(15,21) for y in range(6,8)],
+    [(x, y) for x in range(0,12) for y in range(14,16)],
+    [(x, y) for x in range(0,12) for y in range(18,20)],
+    [(x, y) for x in range(14,22) for y in range(14,16)],
+    [(x, y) for x in range(14,22) for y in range(6,8)],
     [(x, y) for x in range(-1, 24) for y in range(22,24)]
 ]
 
 direcciones_abajo = [
     [(x, y) for x in range(2) for y in range(-1, 24)],
-    [(x, y) for x in range(6, 8) for y in range(1, 11)],
-    [(x, y) for x in range(12, 14) for y in range(1, 11)],
-    [(x, y) for x in range(12, 14) for y in range(15, 21)],
-    [(x, y) for x in range(18, 20) for y in range(15, 21)],
+    [(x, y) for x in range(6, 8) for y in range(0, 12)],
+    [(x, y) for x in range(12, 14) for y in range(0, 12)],
+    [(x, y) for x in range(12, 14) for y in range(14, 22)],
+    [(x, y) for x in range(18, 20) for y in range(14, 22)],
 ]
 
 direcciones_arriba = [
     [(x, y) for x in range(22, 24) for y in range(0, 25)],
     [(x, y) for x in range(14, 16) for y in range(2, 14)],
-    [(x, y) for x in range(14, 16) for y in range(17, 23)],
-    [(x, y) for x in range(18, 20) for y in range(3, 7)],
+    [(x, y) for x in range(14, 16) for y in range(16, 24)],
+    [(x, y) for x in range(18, 20) for y in range(2, 8)],
 ]
 
 def plot_grid(model, ax):
@@ -125,15 +125,15 @@ def plot_grid(model, ax):
                 ax.add_patch(circle)
 
 # Run the model and plot
-city_model = cityClass(numberAgents=18, width=24, height=24)
+city_model = cityClass(numberAgents=1, width=24, height=24)
 
 
-# Integrate intersection turns into model directions
-for pos, directions in intersections.items():
-    if pos in city_model.direcciones_permitidas:
-        city_model.direcciones_permitidas[pos].extend(directions)
-    else:
-        city_model.direcciones_permitidas[pos] = directions
+# # Integrate intersection turns into model directions
+# for pos, directions in intersections.items():
+#     if pos in city_model.direcciones_permitidas:
+#         city_model.direcciones_permitidas[pos].extend(directions)
+#     else:
+#         city_model.direcciones_permitidas[pos] = directions
 
 
 n_steps = 300

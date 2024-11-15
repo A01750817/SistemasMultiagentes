@@ -37,33 +37,33 @@ class cityClass(mesa.Model):
         # Define directions
         direcciones_izquierda = [
             [(x, y) for x in range(25) for y in range(0,2)],
-            [(x, y) for x in range(3,7) for y in range(5,7)],
-            [(x, y) for x in range(3,13) for y in range(12,14)],
-            [(x, y) for x in range(17,23) for y in range(12,14)],
-            [(x, y) for x in range(17,23) for y in range(18,20)]
+            [(x, y) for x in range(2,8) for y in range(5,7)],
+            [(x, y) for x in range(2,14) for y in range(12,14)],
+            [(x, y) for x in range(16,24) for y in range(12,14)],
+            [(x, y) for x in range(16,24) for y in range(18,20)]
         ]
 
         direcciones_derecha = [
-            [(x, y) for x in range(1,11) for y in range(14,16)],
-            [(x, y) for x in range(1,11) for y in range(18,20)],
-            [(x, y) for x in range(15,21) for y in range(14,16)],
-            [(x, y) for x in range(15,21) for y in range(6,8)],
+            [(x, y) for x in range(0,12) for y in range(14,16)],
+            [(x, y) for x in range(0,12) for y in range(18,20)],
+            [(x, y) for x in range(14,22) for y in range(14,16)],
+            [(x, y) for x in range(14,22) for y in range(6,8)],
             [(x, y) for x in range(-1, 24) for y in range(22,24)],
         ]
 
         direcciones_abajo = [
             [(x, y) for x in range(2) for y in range(-1, 24)],
-            [(x, y) for x in range(6, 8) for y in range(1, 11)],
-            [(x, y) for x in range(12, 14) for y in range(1, 11)],
-            [(x, y) for x in range(12, 14) for y in range(15, 21)],
-            [(x, y) for x in range(18, 20) for y in range(15, 21)],
+            [(x, y) for x in range(6, 8) for y in range(0, 12)],
+            [(x, y) for x in range(12, 14) for y in range(0, 12)],
+            [(x, y) for x in range(12, 14) for y in range(14, 22)],
+            [(x, y) for x in range(18, 20) for y in range(14, 22)],
         ]
 
         direcciones_arriba = [
             [(x, y) for x in range(22, 24) for y in range(0, 25)],
             [(x, y) for x in range(14, 16) for y in range(2, 14)],
-            [(x, y) for x in range(14, 16) for y in range(17, 23)],
-            [(x, y) for x in range(18, 20) for y in range(3, 7)],
+            [(x, y) for x in range(14, 16) for y in range(16, 24)],
+            [(x, y) for x in range(18, 20) for y in range(2, 8)],
         ]
 
         # Create allowed directions dictionary
@@ -107,7 +107,7 @@ class cityClass(mesa.Model):
                     break
 
             # Asignar un destino aleatorio de los garajes
-            destination = self.random.choice(self.garajes)
+            destination = (8, 21)
 
             # Crear el agente de carro con su destino
             traffic_light_ref = self.traffic_lights[i % len(self.traffic_lights)]
