@@ -1,9 +1,52 @@
+# Actividad Integradora
+# Codigo que crea el modelo y genera los agentes y semaforos
+# Autores:
+# Santiago Villazón Ponce de León	A01746396
+# Juan Antonio Figueroa Rodríguez	A01369043
+# Iván Alexander Ramos Ramírez		A01750817
+# Sebastián Antonio Almanza			A01749694
+# Fecha de creación: 12/11/2024
+# Última modificación: 15/11/2024
+# Fecha de entrega 15/11/2024
+
+import random
 import mesa
 from car_agent import CarAgent
 from traffic_light import Traffic_light
 
+#Clase que define el modelo de la ciudad y genera sus agentes
 class cityClass(mesa.Model):
+    """
+    Clase que define el ambiente (ciudad) en el que los agentes carro navegan a un destino.
+    ## Atributos:
+    - num_agents (int): Número de agentes en la simulación.
+    - width (int): Ancho de la cuadrícula de la ciudad.
+    - height (int): Alto de la cuadrícula de la ciudad.
+    - grid (mesa.space.MultiGrid): Cuadrícula que modela el espacio en el que los agentes interactúan.
+    - schedule (mesa.time.RandomActivation): Scheduler del modelo.
+    - running (bool): Estado de la simulación (True mientras está activa).
+    - traffic_lights (list): Lista de semáforos presentes en la ciudad.
+    - garajes (list): Coordenadas de garajes dentro de la cuadrícula.
+    - celdas_restringidas (list): Coordenadas de las celdas restringidas.
+    - direcciones_permitidas (dict): Diccionario que asocia coordenadas con direcciones válidas (izquierda, derecha, arriba, abajo).
+    - initial_positions (list): Lista de posiciones iniciales de los agentes; si no se especifican, se asignan aleatoriamente.
+
+    ## Métodos:
+    - __init__(self, numberAgents=1, width=24, height=24): Inicializa la simulación con un número definido de agentes, tamaño de cuadrícula y otros parámetros.
+    - _populate_allowed_directions(self, direction_lists, direction): Llena el diccionario `direcciones_permitidas` con las coordenadas válidas y sus respectivas direcciones.
+    - create_traffic_lights(self): Crea y coloca semáforos en la cuadrícula en posiciones predefinidas que no estén restringidas.
+    - create_agents(self): Crea agentes de tipo CarAgent y los asigna a posiciones iniciales con un destino en uno de los garajes.
+    - step(self): Realiza un paso en la simulación, activando a los agentes en orden aleatorio.
+
+    """
     def __init__(self, numberAgents=1, width=24, height=24):
+        """
+        Inicializa el modelo de celdas con los agentes, semaforos, altura y anchura del mapa y las celdas restringidas.
+        ## Argumentos:
+        - numberAgents (int): Número de agentes en la simulación.
+        - width (int): Ancho de la cuadrícula de la ciudad.
+        - height (int): Alto de la cuadrícula de la ciudad.
+        """
         super().__init__()
         self.num_agents = numberAgents
         self.grid = mesa.space.MultiGrid(width, height, torus=False)
@@ -15,7 +58,6 @@ class cityClass(mesa.Model):
         self.garajes = [(4,4), (4, 11), (2, 8), (8, 9), (9, 2), (10, 11), (11, 6), (17, 2), (20, 5), (20, 8), 
            (18, 11), (3, 17), (10, 16), (4, 20), (8, 21), (17, 17), (21, 20)]
         initial_positions = [(9, 2)]
-        # Define restricted cells (buildings, garages, etc.)
         self.celdas_restringidas = [
             (2, 2), (2, 3), (2, 4), (3, 2), (3, 3), (3, 4), (4, 2), (4, 3), (4, 4), (5, 2), (5, 3), (5, 4),
             (2, 7), (3, 7), (4, 7), (5, 7), (3, 8), (4, 8), (5, 8), (2, 9), (3, 9), (4, 9), (5, 9),
@@ -35,7 +77,7 @@ class cityClass(mesa.Model):
             (20, 21), (21, 21), (13, 13), (14, 13), (14, 14), (13, 14),
         ]
 
-        # Define directions
+        # Define direcciones
         direcciones_izquierda = [
             [(x, y) for x in range(25) for y in range(0,2)],
             [(x, y) for x in range(2,8) for y in range(5,7)],
@@ -73,7 +115,7 @@ class cityClass(mesa.Model):
              (18, 12), (20, 8), (10, 16), (17, 2), (20, 6), (17, 18), (21, 20)]
         ]
 
-        # Create allowed directions dictionary
+        # Crea diccionario con direcciones permitidas
         self.direcciones_permitidas = {}
         self._populate_allowed_directions(direcciones_izquierda, 'left')
         self._populate_allowed_directions(direcciones_derecha, 'right')
@@ -82,12 +124,18 @@ class cityClass(mesa.Model):
 
         self.initial_positions = initial_positions or [None] * self.num_agents
 
-        # Create traffic lights and agents
+        # Crea agentes y semaforos
         self.create_traffic_lights()
         self.create_agents()
 
         
     def _populate_allowed_directions(self, direction_lists, direction):
+        """
+        Funcion que llena el diccionario `direcciones_permitidas` con las coordenadas válidas y sus respectivas direcciones.
+        ## Argumentos
+        - direction_lists (list): Lista de listas de coordenadas válidas para una dirección.
+        - direction (str): Dirección asociada a las coordenadas.
+        """
         for sublist in direction_lists:
             for pos in sublist:
                 if pos not in self.direcciones_permitidas:
@@ -95,6 +143,9 @@ class cityClass(mesa.Model):
                 self.direcciones_permitidas[pos].append(direction)
 
     def create_traffic_lights(self):
+        """
+        Funcion que crea y coloca semáforos en la cuadrícula en posiciones predefinidas que no estén restringidas
+        """
         traffic_light_positions = [
             (0, 4), (1, 4), (2, 5), (2, 6), (11, 18), (11, 19), (12, 17), (13, 17),
             (18, 2), (19, 2), (18, 17), (19, 17), (20, 0), (20, 1), (20, 18),
@@ -108,6 +159,9 @@ class cityClass(mesa.Model):
                 self.traffic_lights.append(semaforo)
 
     def create_agents(self):
+        """
+        Funcion que crea agentes de tipo CarAgent y los asigna a posiciones iniciales con un destino en uno de los garajes
+        """
         for i in range(self.num_agents):
             # Usar la posición inicial proporcionada o asignar aleatoriamente
             if self.initial_positions[i] is not None:
@@ -129,4 +183,7 @@ class cityClass(mesa.Model):
 
 
     def step(self):
+        """
+        Funcion que realiza un paso en la simulación, activando a los agentes en orden aleatorio
+        """
         self.schedule.step()

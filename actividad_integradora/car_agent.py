@@ -1,30 +1,68 @@
+# Actividad Integradora
+# Codigo que modela el agente del auto
+# Autores:
+# Santiago Villazón Ponce de León	A01746396
+# Juan Antonio Figueroa Rodríguez	A01369043
+# Iván Alexander Ramos Ramírez		A01750817
+# Sebastián Antonio Almanza			A01749694
+# Fecha de creación: 12/11/2024
+# Última modificación: 15/11/2024
+# Fecha de entrega 15/11/2024
 import mesa
 from traffic_light import Traffic_light  # Importando Traffic_light
 
 class CarAgent(mesa.Agent):
     """
-    Clase que modela un carro como agente
+    Clase que modela un agente de tipo carro dentro de la simulación de la ciudad.
+    ## Atributos:
+    - model (cityClass): Referencia al modelo al que pertenece el agente.
+    - unique_id (int): Identificador único del agente.
+    - pos (tuple): Posición actual del agente en la cuadrícula (x, y).
+    - traffic_light (Traffic_light): Referencia al semáforo asignado al agente.
+    - last_direction (str): Última dirección en la que se movió el agente ('left', 'right', 'up', 'down').
+    - destination (tuple): Destino del agente en la cuadrícula.
+    ## Métodos:
+    - __init__(self, model, unique_id, pos, traffic_light, destination): Inicializa un agente de tipo carro con una posición inicial, un semáforo asignado y un destino.
+    - get_allowed_directions(self): Devuelve una lista de direcciones permitidas.
+    - heuristic(self, position):Calcula la distancia de Manhattan desde una posición dada hasta el destino del agente.
+    - move(self):Realiza el movimiento del agente hacia su destino, eligiendo la dirección más cercana al objetivo según la heurística y respetando las restricciones del modelo.
+    - is_stop(self):Verifica si el agente debe detenerse debido a un semáforo en rojo en posiciones relevantes. Si no hay restricciones, permite el movimiento.
+    - step(self):Ejecuta un paso de la simulación para el agente. 
+
     """
     def __init__(self, model, unique_id, pos, traffic_light, destination):
+        """ 
+        Inicializa un agente de tipo carro con una posición inicial, un semáforo asignado y un destino.
+        ## Argumentos:
+        - model (cityClass): Referencia al modelo al que pertenece el agente.
+        - unique_id (int): Identificador único del agente.
+        - pos (tuple): Posición actual del agente en la cuadrícula (x, y).
+        - traffic_light (Traffic_light): Referencia al semáforo asignado al agente.
+        - destination (tuple): Destino del agente en la cuadrícul
+        """
         super().__init__(unique_id, model)
         self.pos = pos
         self.traffic_light = traffic_light
-        self.last_direction = None  # Almacenar la última dirección de movimiento
-        self.destination = destination  # Destino del agente
+        self.last_direction = None  
+        self.destination = destination 
 
     def get_allowed_directions(self):
         """
-        Obtiene las direcciones permitidas en la posición actual.
+        Funcion que devuelve una lista de direcciones permitidas.
         """
         return self.model.direcciones_permitidas.get(self.pos, [])
 
     def heuristic(self, position):
         """
-        Calcula la distancia de Manhattan desde una posición hasta el destino.
+        Funcion que calcula la distancia de Manhattan desde una posición dada hasta el destino del agente
         """
         return abs(position[0] - self.destination[0]) + abs(position[1] - self.destination[1])
 
     def move(self):
+        """
+        Función que realiza el movimiento del agente hacia su destino, 
+        eligiendo la dirección más cercana al objetivo según la heurística y respetando las restricciones del modelo.
+        """
         if self.pos == self.destination:
             print(f"Agente {self.unique_id} ha alcanzado su destino: {self.destination}")
             return  # Ya alcanzó el destino
@@ -79,6 +117,10 @@ class CarAgent(mesa.Agent):
         print(f"Agente {self.unique_id} se movió a {self.pos} en dirección {self.last_direction}")
 
     def is_stop(self):
+        """
+        Función que verifica si el agente debe detenerse debido a un semáforo en rojo en posiciones relevantes. 
+        Si no hay restricciones, permite el movimiento.
+        """
         direction_vectors = {
             'left': [(-1, 0), (0, -1), (0, 1)],  # Oeste, Norte, Sur
             'right': [(1, 0), (0, -1), (0, 1)],  # Este, Norte, Sur
@@ -108,6 +150,9 @@ class CarAgent(mesa.Agent):
         print(f"Agente {self.unique_id} en movimiento a {self.pos}")
 
     def step(self):
+        """
+        Función que ejecuta un paso de la simulación para el agente. 
+        """
         if self.pos == self.destination:
             print(f"Agente {self.unique_id} ha llegado a su destino y será eliminado.")
             self.model.grid.remove_agent(self)

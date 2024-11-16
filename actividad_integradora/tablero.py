@@ -1,3 +1,14 @@
+# Actividad Integradora
+# Codigo que muestra el tablero de la ciudad con los agentes y semaforos
+# Autores:
+# Santiago Villazón Ponce de León	A01746396
+# Juan Antonio Figueroa Rodríguez	A01369043
+# Iván Alexander Ramos Ramírez		A01750817
+# Sebastián Antonio Almanza			A01749694
+# Fecha de creación: 12/11/2024
+# Última modificación: 15/11/2024
+# Fecha de entrega 15/11/2024
+
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from actividad_model import cityClass, CarAgent, Traffic_light
@@ -24,15 +35,7 @@ edificios = [
 garajes = [(4,4), (4, 11), (2, 8), (8, 9), (9, 2), (10, 11), (11, 6), (17, 2), (20, 5), (20, 8), 
            (18, 11), (3, 17), (10, 16), (4, 20), (8, 21), (17, 17), (21, 20)]
 
-# # Define intersections with turn directions
-# intersections = {
-#     (6, 6): ['left', 'down'],     # Example intersection: allows turning left and going down
-#     (6, 12): ['down', 'right'],    # Another intersection allowing down and right turns
-#     (12, 6): ['up', 'right'],      # Intersection allowing up and right turns
-#     (12, 18): ['down', 'left'],    # Intersection allowing down and left turns
-#     (18, 12): ['up', 'right'],     # Intersection allowing up and right turns
-#     # Add additional intersections here based on the map layout
-# }
+
 
 # Direcciones (ya definidas en actividad_model.py)
 direcciones_izquierda = [
@@ -43,7 +46,7 @@ direcciones_izquierda = [
     [(x, y) for x in range(16,24) for y in range(18,20)],
     [(2, 8), (8, 9), (12, 6), (17, 2), (20, 5), (18, 17), (22, 20)]
 ]
-#direcciones derecha
+
 direcciones_derecha = [
     [(x, y) for x in range(0,12) for y in range(14,16)],
     [(x, y) for x in range(0,12) for y in range(18,20)],
@@ -131,18 +134,11 @@ def plot_grid(model, ax):
                 ax.add_patch(circle)
 
 # Run the model and plot
+num_agents = 5  
 city_model = cityClass(numberAgents=1, width=24, height=24)
 
 
-# # Integrate intersection turns into model directions
-# for pos, directions in intersections.items():
-#     if pos in city_model.direcciones_permitidas:
-#         city_model.direcciones_permitidas[pos].extend(directions)
-#     else:
-#         city_model.direcciones_permitidas[pos] = directions
-
-
-n_steps = 300
+n_steps = 300 #Modificar en caso de querer probar mas pasos
 plt.ion()
 fig, ax = plt.subplots(figsize=(8, 8))
 
