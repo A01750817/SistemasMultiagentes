@@ -14,7 +14,7 @@ class cityClass(mesa.Model):
         self.traffic_lights = []
         self.garajes = [(4,4), (4, 11), (2, 8), (8, 9), (9, 2), (10, 11), (11, 6), (17, 2), (20, 5), (20, 8), 
            (18, 11), (3, 17), (10, 16), (4, 20), (8, 21), (17, 17), (21, 20)]
-        initial_positions = [(18, 11)]
+        initial_positions = [(9, 2)]
         # Define restricted cells (buildings, garages, etc.)
         self.celdas_restringidas = [
             (2, 2), (2, 3), (2, 4), (3, 2), (3, 3), (3, 4), (4, 2), (4, 3), (4, 4), (5, 2), (5, 3), (5, 4),
@@ -119,7 +119,7 @@ class cityClass(mesa.Model):
                         break
 
             # Asignar un destino aleatorio de los garajes
-            destination = (9, 2)
+            destination = (12, 2)
 
             # Crear el agente de carro con su destino
             traffic_light_ref = self.traffic_lights[i % len(self.traffic_lights)]

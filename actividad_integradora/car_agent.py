@@ -54,6 +54,14 @@ class CarAgent(mesa.Agent):
             if (0 <= new_position[0] < self.model.width and
                 0 <= new_position[1] < self.model.height and
                 new_position not in self.model.celdas_restringidas):
+
+                # Evitar que el agente se mueva repetidamente al mismo garaje si no es su destino
+                if new_position in self.model.garajes:
+                    if new_position != self.destination:
+                        continue  # Ignorar garajes que no son el destino
+                    elif self.pos == new_position:
+                        continue  # Ignorar si ya está en el garaje destino
+                
                 possible_moves.append((new_position, direction))
 
         if not possible_moves:
