@@ -40,7 +40,8 @@ direcciones_izquierda = [
     [(x, y) for x in range(2,8) for y in range(5,7)],
     [(x, y) for x in range(2,14) for y in range(12,14)],
     [(x, y) for x in range(16,24) for y in range(12,14)],
-    [(x, y) for x in range(16,24) for y in range(18,20)]
+    [(x, y) for x in range(16,24) for y in range(18,20)],
+    [(2, 8), (8, 9), (12, 6), (17, 2), (20, 5), (18, 17), (22, 20)]
 ]
 #direcciones derecha
 direcciones_derecha = [
@@ -48,7 +49,8 @@ direcciones_derecha = [
     [(x, y) for x in range(0,12) for y in range(18,20)],
     [(x, y) for x in range(14,22) for y in range(14,16)],
     [(x, y) for x in range(14,22) for y in range(6,8)],
-    [(x, y) for x in range(-1, 24) for y in range(22,24)]
+    [(x, y) for x in range(-1, 24) for y in range(22,24)],
+    [(1, 8), (7, 9), (11, 6), (18, 2), (19, 5), (17, 17), (21, 20)]
 ]
 
 direcciones_abajo = [
@@ -57,7 +59,8 @@ direcciones_abajo = [
     [(x, y) for x in range(12, 14) for y in range(0, 12)],
     [(x, y) for x in range(12, 14) for y in range(14, 22)],
     [(x, y) for x in range(18, 20) for y in range(14, 22)],
-    [(9, 1)]
+    [(9, 1), (4, 19), (8, 21), (3, 17), (4, 4), (4, 11), (10, 11), 
+     (18, 11), (20, 7), (10, 15), (17, 1), (20, 5), (17, 17), (21, 19)]
 ]
 
 direcciones_arriba = [
@@ -65,7 +68,8 @@ direcciones_arriba = [
     [(x, y) for x in range(14, 16) for y in range(2, 14)],
     [(x, y) for x in range(14, 16) for y in range(16, 24)],
     [(x, y) for x in range(18, 20) for y in range(2, 8)],
-    [(9, 1)]
+    [(9, 2), (4, 20), (8, 22), (3, 18), (4, 5), (4, 12), (10, 12), 
+     (18, 12), (20, 8), (10, 16), (17, 2), (20, 6), (17, 18), (21, 20)]
 ]
 
 def plot_grid(model, ax):
