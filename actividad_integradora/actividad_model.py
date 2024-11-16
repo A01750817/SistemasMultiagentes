@@ -14,6 +14,7 @@ class cityClass(mesa.Model):
         self.traffic_lights = []
         self.garajes = [(4,4), (4, 11), (2, 8), (8, 9), (9, 2), (10, 11), (11, 6), (17, 2), (20, 5), (20, 8), 
            (18, 11), (3, 17), (10, 16), (4, 20), (8, 21), (17, 17), (21, 20)]
+        initial_positions = [(18, 11)]
         # Define restricted cells (buildings, garages, etc.)
         self.celdas_restringidas = [
             (2, 2), (2, 3), (2, 4), (3, 2), (3, 3), (3, 4), (4, 2), (4, 3), (4, 4), (5, 2), (5, 3), (5, 4),
@@ -79,6 +80,8 @@ class cityClass(mesa.Model):
         self._populate_allowed_directions(direcciones_abajo, 'down')
         self._populate_allowed_directions(direcciones_arriba, 'up')
 
+        self.initial_positions = initial_positions or [None] * self.num_agents
+
         # Create traffic lights and agents
         self.create_traffic_lights()
         self.create_agents()
@@ -106,11 +109,14 @@ class cityClass(mesa.Model):
 
     def create_agents(self):
         for i in range(self.num_agents):
-            while True:
-                # Generar posición inicial aleatoria
-                pos = (self.random.randrange(self.width), self.random.randrange(self.height))
-                if pos not in self.celdas_restringidas and self.grid.is_cell_empty(pos):
-                    break
+            # Usar la posición inicial proporcionada o asignar aleatoriamente
+            if self.initial_positions[i] is not None:
+                pos = self.initial_positions[i]
+            else:
+                while True:
+                    pos = (self.random.randrange(self.width), self.random.randrange(self.height))
+                    if pos not in self.celdas_restringidas and self.grid.is_cell_empty(pos):
+                        break
 
             # Asignar un destino aleatorio de los garajes
             destination = (9, 2)
