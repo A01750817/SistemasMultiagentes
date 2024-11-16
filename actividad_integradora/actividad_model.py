@@ -119,7 +119,7 @@ class cityClass(mesa.Model):
                         break
 
             # Asignar un destino aleatorio de los garajes
-            destination = (12, 2)
+            destination = (17, 2)
 
             # Crear el agente de carro con su destino
             traffic_light_ref = self.traffic_lights[i % len(self.traffic_lights)]
