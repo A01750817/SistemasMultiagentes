@@ -84,6 +84,7 @@ class cityClass(mesa.Model):
             [(x, y) for x in range(2,14) for y in range(12,14)],
             [(x, y) for x in range(16,24) for y in range(12,14)],
             [(x, y) for x in range(16,24) for y in range(18,20)],
+            [(x, y) for x in range(13, 17) for y in range(12, 13)],
             [(2, 8), (8, 9), (12, 6), (18, 2), (20, 5), (18, 17), (22, 20)]
         ]
 
@@ -93,6 +94,7 @@ class cityClass(mesa.Model):
             [(x, y) for x in range(14,22) for y in range(14,16)],
             [(x, y) for x in range(14,22) for y in range(6,8)],
             [(x, y) for x in range(-1, 24) for y in range(22,24)],
+            [(x, y) for x in range(11, 15) for y in range(15, 16)],
             [(1, 8), (7, 9), (11, 6), (17, 2), (19, 5), (17, 17), (21, 20)]
         ]
 
@@ -102,6 +104,7 @@ class cityClass(mesa.Model):
             [(x, y) for x in range(12, 14) for y in range(0, 12)],
             [(x, y) for x in range(12, 14) for y in range(14, 22)],
             [(x, y) for x in range(18, 20) for y in range(14, 22)],
+            [(x, y) for x in range(12, 13) for y in range(12, 15)],
             [(9, 1), (4, 19), (8, 21), (3, 17), (4, 4), (4, 11), (10, 11), 
              (18, 11), (20, 7), (10, 15), (17, 1), (20, 5), (17, 17), (21, 19)]
         ]
@@ -111,6 +114,7 @@ class cityClass(mesa.Model):
             [(x, y) for x in range(14, 16) for y in range(2, 14)],
             [(x, y) for x in range(14, 16) for y in range(16, 24)],
             [(x, y) for x in range(18, 20) for y in range(2, 8)],
+            [(x, y) for x in range(15, 16) for y in range(12, 17)],
             [(9, 2), (4, 20), (8, 22), (3, 18), (4, 5), (4, 12), (10, 12), 
              (18, 12), (20, 8), (10, 16), (17, 2), (20, 6), (17, 18), (21, 20)]
         ]
@@ -144,19 +148,51 @@ class cityClass(mesa.Model):
 
     def create_traffic_lights(self):
         """
-        Funcion que crea y coloca semáforos en la cuadrícula en posiciones predefinidas que no estén restringidas
+        Crea y coloca semáforos en las posiciones especificadas y los empareja correctamente.
         """
-        traffic_light_positions = [
-            (0, 4), (1, 4), (2, 5), (2, 6), (11, 18), (11, 19), (12, 17), (13, 17),
-            (18, 2), (19, 2), (18, 17), (19, 17), (20, 0), (20, 1), (20, 18),
-            (20, 19), (21, 6), (21, 7), (22, 8), (23, 8)
-        ]
-        for i, pos in enumerate(traffic_light_positions):
-            if pos not in self.celdas_restringidas and self.grid.is_cell_empty(pos):
-                semaforo = Traffic_light(self, 100 + i + 1, pos, timer_interval=10)
-                self.grid.place_agent(semaforo, pos)
-                self.schedule.add(semaforo)
-                self.traffic_lights.append(semaforo)
+        # Definir los pares de semáforos
+        # Par norte-sur: controla flujo de norte a sur
+        ns_pair_positions = [(0, 4), (1, 4), (11, 18), (11, 19),
+        (18, 2), (19, 2), (21, 6), (21, 7), (18, 17), (19, 17)]
+
+        # Par este-oeste: controla flujo de este a oeste
+        ew_pair_positions = [(2, 5), (2, 6), (12, 17), (13, 17), 
+        (20, 18), (20, 19), (20, 0), (20, 1), (22, 8), (23, 8)]
+
+        # Crear semáforos del par norte-sur
+        ns_lights = []
+        for pos in ns_pair_positions:
+            semaforo = Traffic_light(self, len(self.schedule.agents) + 1, pos, timer_interval=10)
+            self.grid.place_agent(semaforo, pos)
+            self.schedule.add(semaforo)
+            ns_lights.append(semaforo)
+
+        # Crear semáforos del par este-oeste
+        ew_lights = []
+        for pos in ew_pair_positions:
+            semaforo = Traffic_light(self, len(self.schedule.agents) + 1, pos, timer_interval=10)
+            self.grid.place_agent(semaforo, pos)
+            self.schedule.add(semaforo)
+            ew_lights.append(semaforo)
+
+        # Emparejar los semáforos
+        # Los semáforos de un mismo par tendrán el mismo estado
+        for semaforo in ns_lights:
+            semaforo.paired_lights = ew_lights  # Semáforos opuestos
+            self.traffic_lights.append(semaforo)
+
+        for semaforo in ew_lights:
+            semaforo.paired_lights = ns_lights  # Semáforos opuestos
+            self.traffic_lights.append(semaforo)
+
+        # Inicializar el estado de los semáforos
+        # Par norte-sur en verde, par este-oeste en rojo
+        for semaforo in ns_lights:
+            semaforo.state = True  # Verde
+        for semaforo in ew_lights:
+            semaforo.state = False  # Rojo
+
+
 
     def create_agents(self):
         """
