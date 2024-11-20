@@ -1,7 +1,5 @@
 from queue import PriorityQueue
 
-from queue import PriorityQueue
-
 class Astar:
     def __init__(self, model, start, end):
         """
@@ -44,7 +42,8 @@ class Astar:
                 0 <= neighbor[1] < self.model.height and
                 direction in allowed_directions):
                 content = self.model.grid.get_cell_list_contents(neighbor)
-                if not any(hasattr(agent, 'type') and agent.type in ['building', 'traffic_light'] for agent in content):
+                # if not any(hasattr(agent, 'type') and agent.type in ['building', 'traffic_light'] for agent in content):
+                if not any(hasattr(agent, 'type') and agent.type in ['building'] for agent in content):
                     neighbors.append(neighbor)
                     print(f"Vecino válido: {neighbor} en dirección {direction}.")
                 else:
