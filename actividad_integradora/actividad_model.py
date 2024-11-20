@@ -207,13 +207,26 @@ class cityClass(mesa.Model):
 
 
     def create_agents(self):
+    # Lista para rastrear las posiciones de los garajes ya utilizados
         used_positions = []
+    
+    # Itera sobre el número de agentes a crear
         for i in range(self.num_agents):
+        # Selecciona aleatoriamente un garaje que no haya sido usado anteriormente
             garage = self.random.choice([g for g in self.garajes if g not in used_positions])
+            # Agrega la posición del garaje a la lista de posiciones utilizadas
             used_positions.append(garage)
+        
+        # Selecciona aleatoriamente un destino que sea diferente al garaje seleccionado
             destination = self.random.choice([g for g in self.garajes if g != garage])
+        
+        # Crea una instancia del agente CarAgent con los parámetros correspondientes
             car = CarAgent(self, i, garage, None, destination)
+        
+        # Coloca el agente en la posición del garaje dentro de la cuadrícula del modelo
             self.grid.place_agent(car, garage)
+        
+            # Añade el agente al scheduler para que sea activado en cada paso de la simulación
             self.schedule.add(car)
 
 
