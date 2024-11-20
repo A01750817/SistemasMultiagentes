@@ -8,6 +8,7 @@
 # Fecha de creación: 12/11/2024
 # Última modificación: 15/11/2024
 # Fecha de entrega 15/11/2024
+
 import mesa
 
 class Traffic_light(mesa.Agent):
@@ -39,7 +40,7 @@ class Traffic_light(mesa.Agent):
         self.timer_interval = timer_interval
         self.state = True  # True = verde, False = rojo
         self.timer = 0
-        self.type = "traffic_light"  # Para identificarlo como semáforo
+        self.type = "traffic_light"
 
     def step(self):
         """

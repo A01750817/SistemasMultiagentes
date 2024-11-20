@@ -174,7 +174,7 @@ class cityClass(mesa.Model):
         # Crear semáforos del par norte-sur
         ns_lights = []
         for pos in ns_pair_positions:
-            semaforo = Traffic_light(self, len(self.schedule.agents) + 1, pos, timer_interval=10)
+            semaforo = Traffic_light(self, len(self.schedule.agents) + 1, pos, timer_interval=30)
             self.grid.place_agent(semaforo, pos)
             self.schedule.add(semaforo)
             ns_lights.append(semaforo)
@@ -182,7 +182,7 @@ class cityClass(mesa.Model):
         # Crear semáforos del par este-oeste
         ew_lights = []
         for pos in ew_pair_positions:
-            semaforo = Traffic_light(self, len(self.schedule.agents) + 1, pos, timer_interval=10)
+            semaforo = Traffic_light(self, len(self.schedule.agents) + 1, pos, timer_interval=30)
             self.grid.place_agent(semaforo, pos)
             self.schedule.add(semaforo)
             ew_lights.append(semaforo)

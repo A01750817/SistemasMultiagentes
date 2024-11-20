@@ -29,6 +29,7 @@ class CarAgent(mesa.Agent):
         return astar.find_path()
 
     def get_allowed_directions(self):
+        """Obtiene las direcciones permitidas para el agente desde su posición actual."""
         return self.model.direcciones_permitidas.get(self.pos, [])
 
     def move(self):
@@ -46,7 +47,7 @@ class CarAgent(mesa.Agent):
 
         next_step = self.path.pop(0)
 
-        # Comprobar si el siguiente paso está permitido por las direcciones y no es un edificio
+        # Verificar si el siguiente paso está permitido y no ocupado por otro agente
         allowed_directions = self.get_allowed_directions()
         direction_vectors = {
             'left': (-1, 0),
@@ -57,11 +58,14 @@ class CarAgent(mesa.Agent):
         for direction, vector in direction_vectors.items():
             target_position = (self.pos[0] + vector[0], self.pos[1] + vector[1])
             if target_position == next_step and direction in allowed_directions:
-                self.model.grid.move_agent(self, next_step)
-                self.pos = next_step
-                self.last_direction = direction
-                print(f"Agente {self.unique_id} se movió a {self.pos} en dirección {direction}")
-                return
+                # Verificar si no hay otro carro en la siguiente posición
+                cell_contents = self.model.grid.get_cell_list_contents(next_step)
+                if not any(agent.type == "car" for agent in cell_contents):
+                    self.model.grid.move_agent(self, next_step)
+                    self.pos = next_step
+                    self.last_direction = direction
+                    print(f"Agente {self.unique_id} se movió a {self.pos} en dirección {direction}")
+                    return
 
         print(f"Agente {self.unique_id} no puede moverse desde {self.pos}")
 
@@ -74,10 +78,12 @@ class CarAgent(mesa.Agent):
             'down': (0, 1),
         }
 
+        # Si no hay una dirección previa, calcula el siguiente paso
         if not self.last_direction:
             self.move()
             return
 
+        # Calcula la posición frente al agente basada en la dirección actual
         move_vector = direction_vectors.get(self.last_direction)
         if not move_vector:
             self.move()
@@ -85,27 +91,29 @@ class CarAgent(mesa.Agent):
 
         front_position = (self.pos[0] + move_vector[0], self.pos[1] + move_vector[1])
 
+        # Si la posición frente al agente está fuera del rango del grid
         if not (0 <= front_position[0] < self.model.width and 0 <= front_position[1] < self.model.height):
             self.move()
             return
 
+        # Verifica el contenido de la celda frente al agente
         cell_contents = self.model.grid.get_cell_list_contents(front_position)
         for agent in cell_contents:
+            # Si hay un semáforo y está en rojo, detén al agente
             if isinstance(agent, Traffic_light) and not agent.state:
                 print(f"Agente {self.unique_id} detenido por semáforo rojo en {front_position}")
                 return
 
+        # Si no hay un semáforo en rojo, el agente puede moverse
         self.move()
 
+
     def step(self):
-        if self.path is None:
-            print(f"Agente {self.unique_id} calculando ruta desde {self.pos} hacia {self.destination}")
-            self.calculate_path()
+        """Define el comportamiento del agente en cada paso."""
         if self.pos == self.destination:
             print(f"Agente {self.unique_id} alcanzó su destino en {self.destination}")
             self.model.grid.remove_agent(self)
             self.model.schedule.remove(self)
-        elif self.path:
-            next_step = self.path.pop(0)
-            print(f"Agente {self.unique_id} se mueve de {self.pos} a {next_step}")
-            self.model.grid.move_agent(self, next_step)
+        else:
+            # Primero verifica si debe detenerse en un semáforo
+            self.is_stop()

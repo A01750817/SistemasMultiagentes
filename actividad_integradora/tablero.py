@@ -94,7 +94,7 @@ def plot_grid(model, ax):
 
 
 # Configuración inicial de la simulación
-num_agents = 1  # Cambia este número para ajustar la cantidad de agentes
+num_agents = 17  # Cambia este número para ajustar la cantidad de agentes
 city_model = cityClass(numberAgents=num_agents, width=24, height=24)
 
 # Número de pasos de la simulación
