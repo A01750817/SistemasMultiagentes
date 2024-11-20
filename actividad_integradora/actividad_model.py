@@ -14,6 +14,12 @@ import mesa
 from car_agent import CarAgent
 from traffic_light import Traffic_light
 
+# Nueva clase BuildingAgent
+class BuildingAgent(mesa.Agent):
+    def __init__(self, unique_id, model):
+        super().__init__(unique_id, model)
+        self.type = "building"  # Identificar el agente como edificio
+
 #Clase que define el modelo de la ciudad y genera sus agentes
 class cityClass(mesa.Model):
     """
@@ -57,7 +63,6 @@ class cityClass(mesa.Model):
         self.traffic_lights = []
         self.garajes = [(4,4), (4, 11), (2, 8), (8, 9), (9, 2), (10, 11), (11, 6), (17, 2), (20, 5), (20, 8), 
            (18, 11), (3, 17), (10, 16), (4, 20), (8, 21), (17, 17), (21, 20)]
-        initial_positions = [(9, 2)]
         self.celdas_restringidas = [
             (2, 2), (2, 3), (2, 4), (3, 2), (3, 3), (3, 4), (4, 2), (4, 3), (4, 4), (5, 2), (5, 3), (5, 4),
             (2, 7), (3, 7), (4, 7), (5, 7), (3, 8), (4, 8), (5, 8), (2, 9), (3, 9), (4, 9), (5, 9),
@@ -126,11 +131,18 @@ class cityClass(mesa.Model):
         self._populate_allowed_directions(direcciones_abajo, 'down')
         self._populate_allowed_directions(direcciones_arriba, 'up')
 
-        self.initial_positions = initial_positions or [None] * self.num_agents
-
         # Crea agentes y semaforos
         self.create_traffic_lights()
         self.create_agents()
+
+    def create_buildings(self):
+        """
+        Crea agentes BuildingAgent en las celdas restringidas.
+        """
+        for pos in self.celdas_restringidas:
+            building = BuildingAgent(self.next_id(), self)
+            self.grid.place_agent(building, pos)
+
 
         
     def _populate_allowed_directions(self, direction_lists, direction):
@@ -195,26 +207,13 @@ class cityClass(mesa.Model):
 
 
     def create_agents(self):
-        """
-        Funcion que crea agentes de tipo CarAgent y los asigna a posiciones iniciales con un destino en uno de los garajes
-        """
+        used_positions = []
         for i in range(self.num_agents):
-            # Usar la posición inicial proporcionada o asignar aleatoriamente
-            if self.initial_positions[i] is not None:
-                pos = self.initial_positions[i]
-            else:
-                while True:
-                    pos = (self.random.randrange(self.width), self.random.randrange(self.height))
-                    if pos not in self.celdas_restringidas and self.grid.is_cell_empty(pos):
-                        break
-
-            # Asignar un destino aleatorio de los garajes
-            destination = (17, 2)
-
-            # Crear el agente de carro con su destino
-            traffic_light_ref = self.traffic_lights[i % len(self.traffic_lights)]
-            car = CarAgent(self, i, pos, traffic_light_ref, destination)
-            self.grid.place_agent(car, pos)
+            garage = self.random.choice([g for g in self.garajes if g not in used_positions])
+            used_positions.append(garage)
+            destination = self.random.choice([g for g in self.garajes if g != garage])
+            car = CarAgent(self, i, garage, None, destination)
+            self.grid.place_agent(car, garage)
             self.schedule.add(car)
 
 

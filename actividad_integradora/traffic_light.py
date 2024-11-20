@@ -25,7 +25,7 @@ class Traffic_light(mesa.Agent):
     - step(self): Realiza un paso en la simulación. Incrementa el temporizador y alterna el estado del semáforo si el temporizador
     alcanza el intervalo configurado.
     """
-    def __init__(self, model, unique_id, pos, timer_interval=10):
+    def __init__(self, model, unique_id, pos, timer_interval):
         """
         Inicializa un semaforo con una posicion, un estado inicial (rojo) y un intervalo de tiempo para alternar su estado.
         ## Argumentos:
@@ -35,10 +35,11 @@ class Traffic_light(mesa.Agent):
         - timer_interval (int): Intervalo de tiempo (en pasos de simulación) entre cambios de estado.
         """
         super().__init__(unique_id, model)
-        self.state = False  # Rojo inicialmente
         self.pos = pos
-        self.timer = 0
         self.timer_interval = timer_interval
+        self.state = True  # True = verde, False = rojo
+        self.timer = 0
+        self.type = "traffic_light"  # Para identificarlo como semáforo
 
     def step(self):
         """
@@ -46,5 +47,5 @@ class Traffic_light(mesa.Agent):
         """
         self.timer += 1
         if self.timer >= self.timer_interval:
-            self.state = not self.state
-            self.timer = 0
+            self.state = not self.state  # Cambia entre True y False
+            self.timer = 0  # Reinicia el temporizador
