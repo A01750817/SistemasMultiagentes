@@ -10,6 +10,8 @@
 # Fecha de entrega 15/11/2024
 
 import mesa
+import asyncio
+import websockets
 
 class Traffic_light(mesa.Agent):
     """
@@ -42,6 +44,12 @@ class Traffic_light(mesa.Agent):
         self.timer = 0
         self.type = "traffic_light"
 
+    async def send_state_to_Unity(self):
+        async with websockets.connect("ws://127.0.0.1:8000/ws") as websocket:
+            state_str = "green" if self.state else "red"
+            message = f"Traffic light {self.unique_id } at {self.pos} is {state_str}"
+            await websocket.send(message)
+
     def step(self):
         """
         Función que realiza un paso en la simulación. Incrementa el temporizador y alterna el estado del semáforo si el temporizador alcanza el intervalo configurado.
@@ -50,3 +58,4 @@ class Traffic_light(mesa.Agent):
         if self.timer >= self.timer_interval:
             self.state = not self.state  # Cambia entre True y False
             self.timer = 0  # Reinicia el temporizador
+            asyncio.run(self.send_state_to_Unity()) #Enviar estado a unity

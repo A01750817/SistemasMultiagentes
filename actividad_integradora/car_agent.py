@@ -11,6 +11,8 @@
 import mesa
 from astar import Astar
 from traffic_light import Traffic_light  # Importando Traffic_light
+import asyncio
+import websockets
 
 class CarAgent(mesa.Agent):
     def __init__(self, model, unique_id, pos, traffic_light, destination):
@@ -65,9 +67,15 @@ class CarAgent(mesa.Agent):
                     self.pos = next_step
                     self.last_direction = direction
                     print(f"Agente {self.unique_id} se movió a {self.pos} en dirección {direction}")
+                    asyncio.run(self.send_movement_to_Unity(next_step)) # Enviar el movimiento a Unity
                     return
 
         print(f"Agente {self.unique_id} no puede moverse desde {self.pos}")
+    
+    async def send_movement_to_Unity(self, new_pos):
+        async with websockets.connect("ws://127.0.0.1:8000/ws") as websocket:
+            message = f"Car {self.unique_id} moved to {new_pos}"
+            await websocket.send(message)
 
     def is_stop(self):
         """Detiene al agente si encuentra un semáforo en rojo."""
