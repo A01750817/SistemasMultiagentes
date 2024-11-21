@@ -53,4 +53,3 @@ class Traffic_light(mesa.Agent):
         if self.timer >= self.timer_interval:
             self.state = not self.state  # Cambia entre True y False
             self.timer = 0  # Reinicia el temporizador
-            asyncio.run(self.send_state_to_Unity()) #Enviar estado a unity
