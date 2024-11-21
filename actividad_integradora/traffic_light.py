@@ -44,11 +44,6 @@ class Traffic_light(mesa.Agent):
         self.timer = 0
         self.type = "traffic_light"
 
-    async def send_state_to_Unity(self):
-        async with websockets.connect("ws://127.0.0.1:8000/ws") as websocket:
-            state_str = "green" if self.state else "red"
-            message = f"Traffic light {self.unique_id } at {self.pos} is {state_str}"
-            await websocket.send(message)
 
     def step(self):
         """

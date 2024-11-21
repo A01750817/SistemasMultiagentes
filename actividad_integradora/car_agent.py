@@ -72,10 +72,7 @@ class CarAgent(mesa.Agent):
 
         print(f"Agente {self.unique_id} no puede moverse desde {self.pos}")
     
-    async def send_movement_to_Unity(self, new_pos):
-        async with websockets.connect("ws://127.0.0.1:8000/ws") as websocket:
-            message = f"Car {self.unique_id} moved to {new_pos}"
-            await websocket.send(message)
+  
 
     def is_stop(self):
         """Detiene al agente si encuentra un semáforo en rojo."""
