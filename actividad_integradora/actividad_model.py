@@ -91,7 +91,7 @@ class cityClass(mesa.Model):
         ]
         self.celdas_restringidas = [
             (2, 2), (2, 3), (2, 4), (3, 2), (3, 3), (3, 4), (4, 2), 
-            (4, 3), (4, 4), (5, 2), (5, 3), (5, 4),
+            (4, 3), (5, 2), (5, 3), (5, 4),
             (2, 7), (3, 7), (4, 7), (5, 7), (3, 8), (4, 8), (5, 8), 
             (2, 9), (3, 9), (4, 9), (5, 9),
             (2, 10), (3, 10), (4, 10), (5, 10), (2, 11), (3, 11), (5, 11),
@@ -236,7 +236,9 @@ class cityClass(mesa.Model):
     
         for i in range(self.num_agents):
             # Seleccionar aleatoriamente un garaje no utilizado
-            available_garajes = [g for g in self.garajes if g not in used_positions]
+            available_garajes = [g for g in [(5,5),(6,5)] if g not in used_positions]
+
+            # available_garajes = [g for g in self.garajes if g not in used_positions]
             if not available_garajes:
                 print(f"No hay más garajes disponibles para el agente {i}.")
                 break  # Salir si no hay garajes disponibles
