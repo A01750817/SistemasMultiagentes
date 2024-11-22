@@ -1,10 +1,9 @@
-# Actividad Integradora
 # Codigo que crea el modelo y genera los agentes y semaforos
 # Autores:
-# Santiago Villazón Ponce de León	A01746396
-# Juan Antonio Figueroa Rodríguez	A01369043
-# Iván Alexander Ramos Ramírez		A01750817
-# Sebastián Antonio Almanza			A01749694
+# Santiago Villazón Ponce de León   A01746396
+# Juan Antonio Figueroa Rodríguez   A01369043
+# Iván Alexander Ramos Ramírez      A01750817
+# Sebastián Antonio Almanza         A01749694
 # Fecha de creación: 12/11/2024
 # Última modificación: 15/11/2024
 # Fecha de entrega 15/11/2024
@@ -160,50 +159,54 @@ class cityClass(mesa.Model):
 
     def create_traffic_lights(self):
         """
-        Crea y coloca semáforos en las posiciones especificadas y los empareja correctamente.
+        Crea y organiza los semáforos agrupados por intersección con nombres asignados.
         """
-        # Definir los pares de semáforos
-        # Par norte-sur: controla flujo de norte a sur
-        ns_pair_positions = [(0, 4), (1, 4), (11, 18), (11, 19),
-        (18, 2), (19, 2), (21, 6), (21, 7), (18, 17), (19, 17)]
+        # Diccionario para asociar nombres de cuadrantes con intersecciones
+        intersections = {
+            "Cuadrante 1": ([(0, 4), (1, 4)], [(2, 5), (2, 6)]),
+            "Cuadrante 2": ([(12, 17), (13, 17)], [(11, 18), (11, 19)]),
+            "Cuadrante 3": ([(18, 2), (19, 2)], [(20, 0), (20, 1)]),
+            "Cuadrante 4": ([(22, 8), (23, 8)], [(21, 6), (21, 7)]),
+            "Cuadrante 5": ([(18, 17), (19, 17)], [(20, 18), (20, 19)]),
+        }
 
-        # Par este-oeste: controla flujo de este a oeste
-        ew_pair_positions = [(2, 5), (2, 6), (12, 17), (13, 17), 
-        (20, 18), (20, 19), (20, 0), (20, 1), (22, 8), (23, 8)]
+        # Iterar sobre cada cuadrante y sus intersecciones
+        for quadrant_name, (ns_positions, ew_positions) in intersections.items():
+            ns_lights = []
+            ew_lights = []
 
-        # Crear semáforos del par norte-sur
-        ns_lights = []
-        for pos in ns_pair_positions:
-            semaforo = Traffic_light(self, len(self.schedule.agents) + 1, pos, timer_interval=30)
-            self.grid.place_agent(semaforo, pos)
-            self.schedule.add(semaforo)
-            ns_lights.append(semaforo)
+            # Crear semáforos norte-sur
+            for pos in ns_positions:
+                light = Traffic_light(self, self.next_id(), pos, timer_interval=30)
+                self.grid.place_agent(light, pos)
+                self.schedule.add(light)
+                ns_lights.append(light)
 
-        # Crear semáforos del par este-oeste
-        ew_lights = []
-        for pos in ew_pair_positions:
-            semaforo = Traffic_light(self, len(self.schedule.agents) + 1, pos, timer_interval=30)
-            self.grid.place_agent(semaforo, pos)
-            self.schedule.add(semaforo)
-            ew_lights.append(semaforo)
+            # Crear semáforos este-oeste
+            for pos in ew_positions:
+                light = Traffic_light(self, self.next_id(), pos, timer_interval=30)
+                self.grid.place_agent(light, pos)
+                self.schedule.add(light)
+                ew_lights.append(light)
 
-        # Emparejar los semáforos
-        # Los semáforos de un mismo par tendrán el mismo estado
-        for semaforo in ns_lights:
-            semaforo.paired_lights = ew_lights  # Semáforos opuestos
-            self.traffic_lights.append(semaforo)
+            # Asignar el grupo de semáforos y nombre del cuadrante a cada semáforo
+            for light in ns_lights + ew_lights:
+                light.intersection_group = ns_lights + ew_lights
+                light.quadrant_name = quadrant_name  # Asignar nombre del cuadrante
 
-        for semaforo in ew_lights:
-            semaforo.paired_lights = ns_lights  # Semáforos opuestos
-            self.traffic_lights.append(semaforo)
+            # Inicializar estados
+            for ns_light in ns_lights:
+                ns_light.state = True  # Verde
+            for ew_light in ew_lights:
+                ew_light.state = False  # Rojo
 
-        # Inicializar el estado de los semáforos
-        # Par norte-sur en verde, par este-oeste en rojo
-        for semaforo in ns_lights:
-            semaforo.state = True  # Verde
-        for semaforo in ew_lights:
-            semaforo.state = False  # Rojo
+            # Agregar semáforos al modelo
+            self.traffic_lights.extend(ns_lights + ew_lights)
 
+        # Imprimir información para depuración
+        print(f"Cuadrante: {quadrant_name}")
+        print(f"  Semáforos norte-sur: {[light.pos for light in ns_lights]}")
+        print(f"  Semáforos este-oeste: {[light.pos for light in ew_lights]}")
 
 
     def create_agents(self):
@@ -232,6 +235,15 @@ class cityClass(mesa.Model):
 
     def step(self):
         """
-        Funcion que realiza un paso en la simulación, activando a los agentes en orden aleatorio
+        Ejecuta un paso de la simulación, activando a los agentes y sincronizando semáforos.
         """
+        # Actualizar semáforos
+        for light in self.traffic_lights:
+            light.step()
+
+        # Activar los agentes
         self.schedule.step()
+
+
+
+
