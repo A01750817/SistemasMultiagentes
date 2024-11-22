@@ -236,9 +236,9 @@ class cityClass(mesa.Model):
     
         for i in range(self.num_agents):
             # Seleccionar aleatoriamente un garaje no utilizado
-            available_garajes = [g for g in [(5,5),(6,5)] if g not in used_positions]
+            # available_garajes = [g for g in [(5,5),(6,5)] if g not in used_positions]
 
-            # available_garajes = [g for g in self.garajes if g not in used_positions]
+            available_garajes = [g for g in self.garajes if g not in used_positions]
             if not available_garajes:
                 print(f"No hay más garajes disponibles para el agente {i}.")
                 break  # Salir si no hay garajes disponibles
