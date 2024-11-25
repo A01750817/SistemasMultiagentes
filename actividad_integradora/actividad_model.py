@@ -119,7 +119,7 @@ class cityClass(mesa.Model):
             [(x, y) for x in range(18, 20) for y in range(14, 22)],
             [(x, y) for x in range(12, 13) for y in range(12, 15)],
             [(9, 1), (4, 19), (8, 21), (3, 17), (4, 4), (4, 11), (10, 11), 
-             (18, 11), (20, 7), (10, 15), (17, 1), (20, 5), (17, 17), (21, 19)]
+             (18, 11), (20, 7), (10, 15), (17, 1), (20, 5), (17, 17), (21, 19),(2,21)]
         ]
 
         direcciones_arriba = [
@@ -148,7 +148,7 @@ class cityClass(mesa.Model):
         """
         Crea agentes BuildingAgent en las celdas restringidas, excepto en las posiciones designadas para paradas de autobús.
         """
-        bus_stop_positions = [(2, 21), (19, 8), (11, 4)]
+        bus_stop_positions = [(2, 21), (19, 8)]
         for pos in self.celdas_restringidas:
             if pos not in bus_stop_positions:
                 building = BuildingAgent(self.next_id(), self)
@@ -159,7 +159,7 @@ class cityClass(mesa.Model):
         """
         Crea agentes BusStopAgent en las posiciones designadas.
         """
-        bus_stop_positions = [(2, 21), (19, 8), (11, 4)]
+        bus_stop_positions = [(2, 21), (19, 8)]
         for pos in bus_stop_positions:
             bus_stop = BusStopAgent(self.next_id(), self)
             self.grid.place_agent(bus_stop, pos)
@@ -259,7 +259,7 @@ class cityClass(mesa.Model):
     
     def create_buses(self):
         # Lista de paradas de autobús
-        bus_stops = [(2, 21), (19, 8), (11, 4)]
+        bus_stops = [(2, 21), (19, 8)]
 
         # Seleccionar aleatoriamente una parada de inicio y una de destino
         start_stop = random.choice(bus_stops)
