@@ -11,12 +11,17 @@ city_model = cityClass(numberAgents=num_agents)
 @app.route('/get_coordinates', methods=['GET'])
 def get_coordinates():
     """Devuelve las coordenadas de los agentes al cliente (Unity)."""
+    # Ajusta estos valores según el tamaño y posición de tu mapa en Unity
+    scale = 1.0  # Ajusta el factor de escala si las calles son más grandes
+    offset_x = -12  # Offset para alinear el grid al centro del mapa en Unity
+    offset_z = -12  # Offset para alinear el grid al centro del mapa en Unity
+
     agent_positions = [
         {
             "id": agent.unique_id,
-            "x": agent.pos[0] * 10,  # Factor de escala para Unity
+            "x": agent.pos[0] * scale + offset_x,
             "y": 0,  # Altura constante
-            "z": agent.pos[1] * 10  # Factor de escala para Unity
+            "z": agent.pos[1] * scale + offset_z
         }
         for agent in city_model.schedule.agents if isinstance(agent, CarAgent)
     ]
