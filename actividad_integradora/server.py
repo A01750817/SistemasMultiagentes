@@ -11,21 +11,25 @@ city_model = cityClass(numberAgents=num_agents)
 @app.route('/get_coordinates', methods=['GET'])
 def get_coordinates():
     """Devuelve las coordenadas de los agentes al cliente (Unity)."""
-    # Ajusta estos valores según el tamaño y posición de tu mapa en Unity
-    scale = 1.0  # Ajusta el factor de escala si las calles son más grandes
-    offset_x = -12  # Offset para alinear el grid al centro del mapa en Unity
-    offset_z = -12  # Offset para alinear el grid al centro del mapa en Unity
+    scale = 10.0  # Ajusta según el cálculo de escala
+    offset_x = -120  # Offset para centrar el mapa
+    offset_z = -120  # Offset para centrar el mapa
+    road_height = 7.36  # Altura fija para los agentes
 
     agent_positions = [
         {
             "id": agent.unique_id,
             "x": agent.pos[0] * scale + offset_x,
-            "y": 0,  # Altura constante
+            "y": road_height,
             "z": agent.pos[1] * scale + offset_z
         }
         for agent in city_model.schedule.agents if isinstance(agent, CarAgent)
     ]
     return jsonify(agent_positions)
+
+
+
+
 
 @app.route('/step_simulation', methods=['POST'])
 def step_simulation():
