@@ -12,6 +12,12 @@ import random
 import mesa
 from car_agent import CarAgent
 from traffic_light import Traffic_light
+from bus_agent import BusAgent
+
+class BusStopAgent(mesa.Agent):
+    def __init__(self, unique_id, model):
+        super().__init__(unique_id, model)
+        self.type = "bus_stop"  # Identificar el agente como parada de autobús
 
 # Nueva clase BuildingAgent
 class BuildingAgent(mesa.Agent):
@@ -59,6 +65,7 @@ class cityClass(mesa.Model):
         self.running = True
         self.width = width
         self.height = height
+        
         self.traffic_lights = []
         self.garajes = [(4,4), (4, 11), (2, 8), (8, 9), (9, 2), (10, 11), (11, 6), (17, 2), (20, 5), (20, 8), 
            (18, 11), (3, 17), (10, 16), (4, 20), (8, 21), (17, 17), (21, 20)]
@@ -80,6 +87,8 @@ class cityClass(mesa.Model):
             (16, 20), (16, 21), (17, 20), (17, 21), (20, 16), (20, 17), (21, 16), (21, 17), (20, 20),
             (20, 21), (21, 21), (13, 13), (14, 13), (14, 14), (13, 14),
         ]
+        self.create_buildings()
+        self.create_bus_stops()
 
         # Define direcciones
         direcciones_izquierda = [
@@ -133,16 +142,28 @@ class cityClass(mesa.Model):
         # Crea agentes y semaforos
         self.create_traffic_lights()
         self.create_agents()
+        self.create_buses()
 
     def create_buildings(self):
         """
-        Crea agentes BuildingAgent en las celdas restringidas.
+        Crea agentes BuildingAgent en las celdas restringidas, excepto en las posiciones designadas para paradas de autobús.
         """
+        bus_stop_positions = [(2, 21), (19, 8), (11, 4)]
         for pos in self.celdas_restringidas:
-            building = BuildingAgent(self.next_id(), self)
-            self.grid.place_agent(building, pos)
-
-
+            if pos not in bus_stop_positions:
+                building = BuildingAgent(self.next_id(), self)
+                self.grid.place_agent(building, pos)
+                self.schedule.add(building)
+                
+    def create_bus_stops(self):
+        """
+        Crea agentes BusStopAgent en las posiciones designadas.
+        """
+        bus_stop_positions = [(2, 21), (19, 8), (11, 4)]
+        for pos in bus_stop_positions:
+            bus_stop = BusStopAgent(self.next_id(), self)
+            self.grid.place_agent(bus_stop, pos)
+            # self.schedule.add(bus_stop)
         
     def _populate_allowed_directions(self, direction_lists, direction):
         """
@@ -235,6 +256,27 @@ class cityClass(mesa.Model):
             
             # Añade el agente al scheduler para que sea activado en cada paso de la simulación
             self.schedule.add(car)
+    
+    def create_buses(self):
+        # Lista de paradas de autobús
+        bus_stops = [(2, 21), (19, 8), (11, 4)]
+
+        # Seleccionar aleatoriamente una parada de inicio y una de destino
+        start_stop = random.choice(bus_stops)
+        destination_stops = [stop for stop in bus_stops if stop != start_stop]
+        destination_stop = random.choice(destination_stops)
+
+        # Definir la ruta del autobús (puedes personalizarla)
+        ruta_autobus = [destination_stop]
+
+        # Crear una instancia del BusAgent
+        bus = BusAgent(self, self.next_id(), pos=start_stop, ruta_Autobus=ruta_autobus)
+
+        # Colocar el agente en la posición de inicio
+        self.grid.place_agent(bus, start_stop)
+
+        # Agregar el agente al scheduler
+        self.schedule.add(bus)
 
 
 

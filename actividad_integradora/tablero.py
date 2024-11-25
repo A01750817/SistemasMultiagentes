@@ -11,7 +11,8 @@
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from actividad_model import cityClass, CarAgent, Traffic_light, BuildingAgent
+from actividad_model import cityClass, CarAgent, Traffic_light, BuildingAgent, BusStopAgent
+from bus_agent import BusAgent  # Importar BusAgent si está en un archivo separado
 
 # Define la lista de edificios (si prefieres mantenerla aquí)
 edificios = [
@@ -77,11 +78,20 @@ def plot_grid(model, ax):
                 dx, dy = 0.5, 0.45
                 ax.annotate("v", (pos[0] + dx, pos[1] + 1 + dy), color=colores_direcciones[direction], fontsize=8, ha='center')
 
+
     # Dibujar agentes y semáforos
     for (contents, (x, y)) in model.grid.coord_iter():
         for obj in contents:
             if isinstance(obj, CarAgent):
                 rect = patches.Rectangle((x, y), 1, 1, linewidth=1, edgecolor='black', facecolor='orange')
+                ax.add_patch(rect)
+            elif isinstance(obj, BusAgent):
+                # Dibujar el autobús
+                rect = patches.Rectangle((x, y), 1, 1, linewidth=1, edgecolor='black', facecolor='green')
+                ax.add_patch(rect)
+            elif isinstance(obj, BusStopAgent):
+                # Dibujar la parada de autobús
+                rect = patches.Rectangle((x, y), 1, 1, linewidth=1, edgecolor='black', facecolor='purple')
                 ax.add_patch(rect)
             elif isinstance(obj, Traffic_light):
                 color = 'green' if obj.state else 'red'
