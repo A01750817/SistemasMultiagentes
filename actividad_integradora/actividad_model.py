@@ -10,15 +10,17 @@
 
 import random
 import mesa
+import mesa.agent
 from car_agent import CarAgent
 from traffic_light import Traffic_light
+from bus_agent import BusAgent
 
 # Nueva clase BuildingAgent
 class BuildingAgent(mesa.Agent):
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
         self.type = "building"  # Identificar el agente como edificio
-
+        
 #Clase que define el modelo de la ciudad y genera sus agentes
 class cityClass(mesa.Model):
     """
@@ -62,6 +64,7 @@ class cityClass(mesa.Model):
         self.traffic_lights = []
         self.garajes = [(4,4), (4, 11), (2, 8), (8, 9), (9, 2), (10, 11), (11, 6), (17, 2), (20, 5), (20, 8), 
            (18, 11), (3, 17), (10, 16), (4, 20), (8, 21), (17, 17), (21, 20)]
+        self.bus_stops = [(2,21),(11,21)]
         self.celdas_restringidas = [
             (2, 2), (2, 3), (2, 4), (3, 2), (3, 3), (3, 4), (4, 2), (4, 3), (4, 4), (5, 2), (5, 3), (5, 4),
             (2, 7), (3, 7), (4, 7), (5, 7), (3, 8), (4, 8), (5, 8), (2, 9), (3, 9), (4, 9), (5, 9),
@@ -75,8 +78,8 @@ class cityClass(mesa.Model):
             (19, 9), (19, 10), (19, 11), (20, 9), (20, 10), (20, 11), (21, 8), (21, 9), (21, 10), (21, 11),
             (2, 16), (3, 16), (4, 16), (5, 16), (6, 16), (7, 16), (8, 16), (9, 16), (11, 16), (2, 17),
             (4, 17), (5, 17), (6, 17), (7, 17), (8, 17), (9, 17), (10, 17), (11, 17), (2, 20), (3, 20),
-            (5, 20), (6, 20), (7, 20), (8, 20), (9, 20), (11, 20), (10, 20), (2, 21), (3, 21), (4, 21),
-            (5, 21), (6, 21), (7, 21), (9, 21), (10, 21), (11, 21), (16, 16), (16, 17), (17, 16),
+            (5, 20), (6, 20), (7, 20), (8, 20), (9, 20), (11, 20), (10, 20), (3, 21), (4, 21),
+            (5, 21), (6, 21), (7, 21), (9, 21), (10, 21), (16, 16), (16, 17), (17, 16),
             (16, 20), (16, 21), (17, 20), (17, 21), (20, 16), (20, 17), (21, 16), (21, 17), (20, 20),
             (20, 21), (21, 21), (13, 13), (14, 13), (14, 14), (13, 14),
         ]
@@ -109,8 +112,8 @@ class cityClass(mesa.Model):
             [(x, y) for x in range(12, 14) for y in range(14, 22)],
             [(x, y) for x in range(18, 20) for y in range(14, 22)],
             [(x, y) for x in range(12, 13) for y in range(12, 15)],
-            [(9, 1), (4, 19), (8, 21), (3, 17), (4, 4), (4, 11), (10, 11), 
-             (18, 11), (20, 7), (10, 15), (17, 1), (20, 5), (17, 17), (21, 19)]
+            [(9, 1), (4, 19), (8, 21), (3, 17), (4, 4), (4, 11), (10, 11),
+             (18, 11), (20, 7), (10, 15), (17, 1), (20, 5), (17, 17), (21, 19),(2,21)]
         ]
 
         direcciones_arriba = [
@@ -120,7 +123,7 @@ class cityClass(mesa.Model):
             [(x, y) for x in range(18, 20) for y in range(2, 8)],
             [(x, y) for x in range(15, 16) for y in range(12, 17)],
             [(9, 2), (4, 20), (8, 22), (3, 18), (4, 5), (4, 12), (10, 12), 
-             (18, 12), (20, 8), (10, 16), (17, 2), (20, 6), (17, 18), (21, 20)]
+             (18, 12), (20, 8), (10, 16), (17, 2), (20, 6), (17, 18), (21, 20),(11,22)]
         ]
 
         # Crea diccionario con direcciones permitidas
@@ -133,6 +136,7 @@ class cityClass(mesa.Model):
         # Crea agentes y semaforos
         self.create_traffic_lights()
         self.create_agents()
+        self.create_agents_bus()
 
     def create_buildings(self):
         """
@@ -156,6 +160,114 @@ class cityClass(mesa.Model):
                 if pos not in self.direcciones_permitidas:
                     self.direcciones_permitidas[pos] = []
                 self.direcciones_permitidas[pos].append(direction)
+                
+
+    # En el método create_agents_bus, asegúrate de que 'destination' sea una tupla
+    # actividad_model.py
+
+    def create_agents_bus(self):
+        # Lista para rastrear las posiciones de los garajes ya utilizados
+        used_positions = []
+        
+        # Itera sobre el número de agentes a crear
+        for i in range(1):
+            # Selecciona aleatoriamente un garaje que no haya sido usado anteriormente
+            stopBus = self.random.choice([g for g in self.bus_stops if g not in used_positions])
+            # Asegúrate de que el garage es válido (dentro del rango y no restringido)
+            if self.grid.out_of_bounds(stopBus) or stopBus in self.celdas_restringidas:
+                continue
+            
+            # Agrega la posición del garaje a la lista de posiciones utilizadas
+            used_positions.append(stopBus)
+            
+            # Selecciona aleatoriamente un destino que sea diferente al garaje seleccionado
+            destination = self.random.choice([g for g in self.bus_stops if g != stopBus])
+            
+            # Verifica que 'destination' es una tupla
+            if not isinstance(destination, tuple):
+                raise TypeError(f"El destino debe ser una tupla, pero se recibió: {destination} de tipo {type(destination)}")
+            
+            # Depuración: Imprime las posiciones seleccionadas
+            print(f"Creando BusAgent {i} con Posición: {stopBus} y Destino: {destination}")
+            
+            # Crea una lista de ruta que incluya el garaje y el destino
+            ruta_Autobus = [stopBus, destination]
+            
+            # Crea una instancia del agente BusAgent con los parámetros correspondientes
+            bus = BusAgent(self, i, stopBus, None, ruta_Autobus)
+            
+            # Remueve cualquier agente existente en la posición antes de colocar uno nuevo
+            existing_agents = self.grid.get_cell_list_contents(stopBus)
+            for agent in existing_agents:
+                self.grid.remove_agent(agent)
+            
+            # Coloca el agente en la posición del garaje dentro de la cuadrícula del modelo
+            self.grid.place_agent(bus, stopBus)
+            
+            # Añade el agente al scheduler para que sea activado en cada paso de la simulación
+            self.schedule.add(bus)
+
+
+    def create_traffic_lights(self):
+        """
+        Crea y organiza los semáforos agrupados por intersección con nombres asignados.
+        """
+        # Diccionario para asociar nombres de cuadrantes con intersecciones
+        intersections = {
+            "Cuadrante 1": ([(0, 4), (1, 4)], [(2, 5), (2, 6)]),
+            "Cuadrante 2": ([(12, 17), (13, 17)], [(11, 18), (11, 19)]),
+            "Cuadrante 3": ([(18, 2), (19, 2)], [(20, 0), (20, 1)]),
+            "Cuadrante 4": ([(22, 8), (23, 8)], [(21, 6), (21, 7)]),
+            "Cuadrante 5": ([(18, 17), (19, 17)], [(20, 18), (20, 19)]),
+        }
+
+        # Iterar sobre cada cuadrante y sus intersecciones
+        for quadrant_name, (ns_positions, ew_positions) in intersections.items():
+            ns_lights = []
+            ew_lights = []
+
+            # Crear semáforos norte-sur
+            for pos in ns_positions:
+                # Remover agentes existentes antes de colocar uno nuevo
+                existing_agents = self.grid.get_cell_list_contents(pos)
+                for agent in existing_agents:
+                    self.grid.remove_agent(agent)
+                
+                light = Traffic_light(self, self.next_id(), pos, timer_interval=30)
+                self.grid.place_agent(light, pos)
+                self.schedule.add(light)
+                ns_lights.append(light)
+
+            # Crear semáforos este-oeste
+            for pos in ew_positions:
+                # Remover agentes existentes antes de colocar uno nuevo
+                existing_agents = self.grid.get_cell_list_contents(pos)
+                for agent in existing_agents:
+                    self.grid.remove_agent(agent)
+                
+                light = Traffic_light(self, self.next_id(), pos, timer_interval=30)
+                self.grid.place_agent(light, pos)
+                self.schedule.add(light)
+                ew_lights.append(light)
+
+            # Asignar el grupo de semáforos y nombre del cuadrante a cada semáforo
+            for light in ns_lights + ew_lights:
+                light.intersection_group = ns_lights + ew_lights
+                light.quadrant_name = quadrant_name  # Asignar nombre del cuadrante
+
+            # Inicializar estados
+            for ns_light in ns_lights:
+                ns_light.state = True  # Verde
+            for ew_light in ew_lights:
+                ew_light.state = False  # Rojo
+
+            # Agregar semáforos al modelo
+            self.traffic_lights.extend(ns_lights + ew_lights)
+
+            # Imprimir información para depuración
+            print(f"Cuadrante: {quadrant_name}")
+            print(f"  Semáforos norte-sur: {[light.pos for light in ns_lights]}")
+            print(f"  Semáforos este-oeste: {[light.pos for light in ew_lights]}")
 
     def create_traffic_lights(self):
         """

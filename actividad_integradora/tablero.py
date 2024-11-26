@@ -11,7 +11,7 @@
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from actividad_model import cityClass, CarAgent, Traffic_light, BuildingAgent
+from actividad_model import cityClass, CarAgent, Traffic_light, BuildingAgent, BusAgent
 
 # Define la lista de edificios (si prefieres mantenerla aquí)
 edificios = [
@@ -27,7 +27,7 @@ edificios = [
     (19, 9), (19, 10), (19, 11), (20, 9), (20, 10), (20, 11), (21, 8), (21, 9), (21, 10), (21, 11), 
     (2, 16), (3, 16), (4, 16), (5, 16), (6, 16), (7, 16), (8, 16), (9, 16), (11, 16), (2, 17), 
     (4, 17), (5, 17), (6, 17), (7, 17), (8, 17), (9, 17), (10, 17), (11, 17), (2, 20), (3, 20), 
-    (5, 20), (6, 20), (7, 20), (8, 20), (9, 20), (11, 20), (10, 20), (2, 21), (3, 21), (4, 21), 
+    (5, 20), (6, 20), (7, 20), (8, 20), (9, 20), (11, 20), (10, 20), (3, 21), (4, 21), 
     (5, 21), (6, 21), (7, 21), (9, 21), (10, 21), (11, 21), (16, 16), (16, 17), (17, 16), 
     (16, 20), (16, 21), (17, 20), (17, 21), (20, 16), (20, 17), (21, 16), (21, 17), (20, 20), 
     (20, 21), (21, 21), (13, 13), (14, 13), (14, 14), (13, 14),
@@ -90,6 +90,11 @@ def plot_grid(model, ax):
             elif isinstance(obj, BuildingAgent):
                 rect = patches.Rectangle((x, y), 1, 1, linewidth=1, edgecolor='black', facecolor='gray')
                 ax.add_patch(rect)
+            elif isinstance(obj, BusAgent):
+                rect = patches.Rectangle((x, y), 1, 1, linewidth=1, edgecolor='black', facecolor='green')
+                ax.add_patch(rect)
+
+                 
 
 
 
