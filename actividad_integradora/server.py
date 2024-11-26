@@ -5,7 +5,7 @@ from car_agent import CarAgent
 app = Flask(__name__)
 
 # Instancia del modelo
-num_agents = 5  # Cambia según el número de agentes
+num_agents = 17  # Cambia según el número de agentes
 city_model = cityClass(numberAgents=num_agents)
 
 @app.route('/get_coordinates', methods=['GET'])

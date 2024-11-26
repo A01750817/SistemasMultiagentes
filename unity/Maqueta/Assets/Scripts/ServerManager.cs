@@ -7,6 +7,8 @@ public class ServerManager : MonoBehaviour
 {
     public List<GameObject> carModels; // Modelos de autos
     private Dictionary<string, GameObject> carObjects = new Dictionary<string, GameObject>();
+    private Dictionary<string, List<Vector3>> carPaths = new Dictionary<string, List<Vector3>>(); // Rutas de los autos
+    private Dictionary<string, LineRenderer> carLineRenderers = new Dictionary<string, LineRenderer>(); // Líneas de recorrido
     private string baseUrl = "http://localhost:5000"; // URL base del servidor Flask
 
     void Start()
@@ -20,10 +22,7 @@ public class ServerManager : MonoBehaviour
 
     IEnumerator InitializeSimulation()
     {
-        // Inicia la simulación (puedes hacer un paso inicial o simplemente preparar los datos).
         yield return StartCoroutine(UpdateCarPositions());
-
-        // Comenzar el bucle de actualización de posiciones
         StartCoroutine(UpdatePositionsLoop());
     }
 
@@ -84,7 +83,8 @@ public class ServerManager : MonoBehaviour
 
             if (carObjects.ContainsKey(car.id))
             {
-                // Mover auto existente
+                // Actualizar ruta y mover auto existente
+                UpdateCarPath(car.id, targetPosition);
                 StartCoroutine(MoveObject(carObjects[car.id], targetPosition, 0.5f));
             }
             else
@@ -92,7 +92,32 @@ public class ServerManager : MonoBehaviour
                 // Instanciar nuevo auto
                 GameObject newCar = Instantiate(GetRandomCarModel(), targetPosition, Quaternion.identity);
                 carObjects[car.id] = newCar;
+
+                // Crear ruta inicial
+                carPaths[car.id] = new List<Vector3> { targetPosition };
+
+                // Agregar LineRenderer
+                LineRenderer lineRenderer = newCar.AddComponent<LineRenderer>();
+                lineRenderer.positionCount = 1;
+                lineRenderer.SetPosition(0, targetPosition);
+                lineRenderer.startWidth = 0.1f;
+                lineRenderer.endWidth = 0.1f;
+                lineRenderer.material = new Material(Shader.Find("Sprites/Default")) { color = Color.red };
+                carLineRenderers[car.id] = lineRenderer;
             }
+        }
+    }
+
+    void UpdateCarPath(string carId, Vector3 newPosition)
+    {
+        if (carPaths.ContainsKey(carId))
+        {
+            carPaths[carId].Add(newPosition);
+
+            // Actualizar LineRenderer
+            LineRenderer lineRenderer = carLineRenderers[carId];
+            lineRenderer.positionCount = carPaths[carId].Count;
+            lineRenderer.SetPositions(carPaths[carId].ToArray());
         }
     }
 
