@@ -16,7 +16,6 @@ public class ServerManager : MonoBehaviour
 
     void Update()
     {
-        // Opcional: Puedes llamar aquí a métodos para avanzar la simulación si lo necesitas
     }
 
     IEnumerator InitializeSimulation()
