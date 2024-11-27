@@ -737,27 +737,32 @@ class cityClass(mesa.Model):
         print(f"  Semáforos este-oeste: {[light.pos for light in ew_lights]}")
 
     def create_agents(self):
-    # Lista para rastrear las posiciones de los garajes ya utilizados
-        used_positions = []
-    
-    # Itera sobre el número de agentes a crear
+        """
+        Crea agentes de tipo coche con posiciones iniciales y destinos aleatorios.
+        Asegura que ciertos destinos conflictivos no sean seleccionados.
+        """
+        used_positions = []  # Lista para rastrear las posiciones de los garajes ya utilizados
+
         for i in range(self.num_agents):
-        # Selecciona aleatoriamente un garaje que no haya sido usado anteriormente
+            # Selecciona aleatoriamente un garaje que no haya sido usado anteriormente
             garage = self.random.choice([g for g in self.garajes if g not in used_positions])
-            # Agrega la posición del garaje a la lista de posiciones utilizadas
-            used_positions.append(garage)
-        
-        # Selecciona aleatoriamente un destino que sea diferente al garaje seleccionado
-            destination = self.random.choice([g for g in self.garajes if g != garage])
-        
-        # Crea una instancia del agente CarAgent con los parámetros correspondientes
+            used_positions.append(garage)  # Marca el garaje como usado
+
+            # Selecciona un destino válido que no entre en conflicto con el garaje actual
+            if garage == (27, 6):
+                destination = self.random.choice([g for g in self.garajes if g != garage and g != (27, 11)])
+            elif garage == (27, 11):
+                destination = self.random.choice([g for g in self.garajes if g != garage and g != (27, 6)])
+            else:
+                destination = self.random.choice([g for g in self.garajes if g != garage])
+
+            # Crea el agente coche con el garaje inicial y el destino
             car = CarAgent(self, i, garage, None, destination)
-        
-        # Coloca el agente en la posición del garaje dentro de la cuadrícula del modelo
             self.grid.place_agent(car, garage)
-        
-            # Añade el agente al scheduler para que sea activado en cada paso de la simulación
             self.schedule.add(car)
+
+            print(f"Coche {car.unique_id}: Creado en {garage} con destino {destination}.")
+
 
 
     def step(self):
