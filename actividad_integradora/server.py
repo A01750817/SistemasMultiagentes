@@ -14,16 +14,16 @@ def get_coordinates():
     scale = 2.4  # Ajusta según el cálculo de escala
     offset_x = -12  # Offset para centrar el mapa en Unity
     offset_z = 20  # Offset para centrar el mapa en Unity
-    road_height = 1.29  # Altura fija para los agentes en Unity
+    road_height = 0.001 # Altura fija para los agentes en Unity 0.001  
 
     # Transformación de coordenadas
     agent_positions = {
         "car_positions": [
             {
                 "id": agent.unique_id,
-                "x": (agent.pos[0] - offset_x) * scale,
+                "x": agent.pos[0],
                 "y": road_height,
-                "z": -(24 - agent.pos[1] - offset_z) * scale
+                "z": -agent.pos[1]
             }
             for agent in city_model.schedule.agents if isinstance(agent, CarAgent)
         ]

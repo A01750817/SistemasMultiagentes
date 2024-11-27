@@ -83,8 +83,8 @@ public class ServerManager : MonoBehaviour
 
             if (carObjects.ContainsKey(car.id))
             {
-                // Actualizar ruta y mover auto existente
-                UpdateCarPath(car.id, targetPosition);
+                // Antes de mover, actualizar la ruta y el LineRenderer
+                UpdateCarPath(car.id, carObjects[car.id].transform.position);
                 StartCoroutine(MoveObject(carObjects[car.id], targetPosition, 0.5f));
             }
             else
@@ -108,13 +108,14 @@ public class ServerManager : MonoBehaviour
         }
     }
 
-    void UpdateCarPath(string carId, Vector3 newPosition)
+    void UpdateCarPath(string carId, Vector3 currentPosition)
     {
         if (carPaths.ContainsKey(carId))
         {
-            carPaths[carId].Add(newPosition);
+            // Agregar la posición actual a la ruta
+            carPaths[carId].Add(currentPosition);
 
-            // Actualizar LineRenderer
+            // Actualizar el LineRenderer
             LineRenderer lineRenderer = carLineRenderers[carId];
             lineRenderer.positionCount = carPaths[carId].Count;
             lineRenderer.SetPositions(carPaths[carId].ToArray());
@@ -131,6 +132,32 @@ public class ServerManager : MonoBehaviour
         Vector3 startPosition = obj.transform.position;
         float elapsedTime = 0;
 
+        // Determinar la rotación antes de mover
+        Vector3 direction = targetPosition - startPosition;
+        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.z))
+        {
+            if (direction.x > 0)
+            {
+                obj.transform.rotation = Quaternion.Euler(0, 90, 0); // Girar hacia la derecha
+            }
+            else
+            {
+                obj.transform.rotation = Quaternion.Euler(0, -90, 0); // Girar hacia la izquierda
+            }
+        }
+        else
+        {
+            if (direction.z > 0)
+            {
+                obj.transform.rotation = Quaternion.Euler(0, 0, 0); // Avanzar hacia adelante
+            }
+            else
+            {
+                obj.transform.rotation = Quaternion.Euler(0, 180, 0); // Girar para retroceder
+            }
+        }
+
+        // Mover el objeto suavemente
         while (elapsedTime < duration)
         {
             obj.transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / duration);
