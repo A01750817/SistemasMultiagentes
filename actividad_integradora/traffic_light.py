@@ -1,10 +1,10 @@
 # Actividad Integradora
 # Codigo que modela el agente de los semaforos
 # Autores:
-# Santiago Villazón Ponce de León	A01746396
-# Juan Antonio Figueroa Rodríguez	A01369043
-# Iván Alexander Ramos Ramírez		A01750817
-# Sebastián Antonio Almanza			A01749694
+# Santiago Villazón Ponce de León   A01746396
+# Juan Antonio Figueroa Rodríguez   A01369043
+# Iván Alexander Ramos Ramírez      A01750817
+# Sebastián Antonio Almanza         A01749694
 # Fecha de creación: 12/11/2024
 # Última modificación: 15/11/2024
 # Fecha de entrega 15/11/2024
@@ -36,9 +36,9 @@ class Traffic_light(mesa.Agent):
         - unique_id (int): Identificador único del semaforo.
         - pos (tuple): Posición del semaforo en la cuadrícula (x, y).
         - timer_interval (int): Intervalo de tiempo (en pasos de simulación) entre cambios de estado.
-        - self.type crea el agente "traffic_light" como agente, util para identificarlo dentro del modelo
+        - self.type crea el agente "traffic_light" como agente, util para identificarlo dentro del modelo.
         - intersection_group agrupa los semáforos que pertenecen a la misma intersección o cuadrante.
-        - self count almacena la cantuidad de coches que detecta el semaforo en frente de su posición
+        - self.count almacena la cantidad de coches que detecta el semáforo en frente de su posición.
         """
         super().__init__(unique_id, model)
         self.pos = pos
@@ -69,6 +69,35 @@ class Traffic_light(mesa.Agent):
 
                 if self.cars_count > 0:
                     print(f"La cantidad de coches frente al semaforo son {self.pos}: {self.cars_count} coches")
+
+    def __count_cars(self, offset):
+        """
+        Cuenta los coches en una dirección específica.
+        """
+        cell = self.pos
+        count = 0
+        for _ in range(4):  # Verifica hasta 4 celdas de distancia
+            cell = (cell[0] + offset[0], cell[1] + offset[1])
+            if self.model.grid.out_of_bounds(cell):
+                break
+            contents = self.model.grid.get_cell_list_contents(cell)
+            for agent in contents:
+                if getattr(agent, "type", None) == "car":
+                    count += 1
+        self.cars_count += count
+
+    def __get_cars_in_line(self, direction):
+        """
+        Determina en qué dirección contar coches.
+        """
+        if direction == 'right':
+            self.__count_cars((-1, 0))
+        elif direction == 'left':
+            self.__count_cars((1, 0))
+        elif direction == 'up':
+            self.__count_cars((0, -1))
+        elif direction == 'down':
+            self.__count_cars((0, 1))
 
     def synchronize_with_intersection(self):
         """
@@ -119,6 +148,18 @@ class Traffic_light(mesa.Agent):
                 light.state = False  # Rojo
                 light.timer = 0
 
+    def step3(self):
+        """
+        Tercer paso en el ciclo de programación.
+        Realiza acciones específicas dependiendo de la dirección.
+        """
+        if self.model.num_steps % 11 != 0 and self.model.num_steps != 1:
+            pass
+        else:
+            direction = self.__get_light_direction()
+            self.__get_cars_in_line(direction)
+            self.__add_pairs()
+
     def step(self):
         """
         Actualiza el estado del semáforo en cada paso de la simulación.
@@ -126,3 +167,4 @@ class Traffic_light(mesa.Agent):
         self.count_cars()
         self.prioritize_pair_in_quadrant()
         self.synchronize_with_intersection()
+

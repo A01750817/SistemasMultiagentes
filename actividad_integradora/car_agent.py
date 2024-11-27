@@ -30,6 +30,52 @@ class CarAgent(mesa.Agent):
         """Calcula la ruta usando A*."""
         astar = Astar(self.model, self.pos, self.destination)
         return astar.find_path()
+    
+    def stop_for_pedestrian(self):
+        """
+        Detiene el coche temporalmente al recibir una solicitud de un peatón.
+        """
+        self.is_stopped = True
+        print(f"Coche {self.unique_id}: Detenido para ceder el paso a un peatón.")
+
+    def detect_pedestrian(self):
+        """
+        Detecta si hay un peatón en las celdas frente al coche.
+        """
+        direction_vectors = {
+            'left': (-1, 0),
+            'right': (1, 0),
+            'up': (0, -1),
+            'down': (0, 1),
+        }
+
+        if not self.last_direction:
+            return False
+
+        move_vector = direction_vectors.get(self.last_direction)
+        if not move_vector:
+            return False
+
+        front_position = (self.pos[0] + move_vector[0], self.pos[1] + move_vector[1])
+
+        if not self.model.grid.out_of_bounds(front_position):
+            cell_contents = self.model.grid.get_cell_list_contents(front_position)
+            for agent in cell_contents:
+                if getattr(agent, "type", None) == "pedestrian":
+                    print(f"Coche {self.unique_id}: Detectó un peatón en {front_position}.")
+                    return True
+
+        return False
+    
+    def __is_there_a_pedestrian(self, next_cell):
+        """Checks whether there is a pedestrian in the next cell."""
+        if next_cell != self.prev_cell:  # Evitar conflictos con la celda anterior
+            content = self.model.grid.get_cell_list_contents(next_cell)
+            for agent in content:
+                if agent.type == 'pedestrian':  # Verifica si hay un peatón en la celda
+                    return True
+        return False
+
 
     def get_allowed_directions(self):
         """Obtiene las direcciones permitidas para el agente desde su posición actual."""
@@ -48,7 +94,7 @@ class CarAgent(mesa.Agent):
         """Checks whether there is an obstacle in next cell."""
         content = self.model.grid.get_cell_list_contents(next_cell)
         for agent in content:
-            if agent.type in ['car', 'building', 'parking']:
+            if agent.type in ['car', 'building', 'parking', 'pedestrian']:
                 return True
         return False
 
@@ -161,7 +207,8 @@ class CarAgent(mesa.Agent):
         next_step = self.path.pop(0)
 
         # Verificar si el siguiente paso está permitido y no ocupado por otro agente
-        if not self.__is_there_a_car(next_step):  # Verifica si la celda no tiene otro coche
+        if not self.__is_there_a_car(next_step) and not self.__is_there_a_pedestrian(next_step):
+            # Procede al movimiento si no hay un coche ni un peatón en la celda
             allowed_directions = self.get_allowed_directions()
             direction_vectors = {
                 'left': (-1, 0),
@@ -186,8 +233,9 @@ class CarAgent(mesa.Agent):
         if not self.__change_lanes():
             print(f"Agente {self.unique_id} no puede moverse desde {self.pos} ni cambiar de carril.")
 
+
     def is_stop(self):
-        """Detiene al agente si encuentra un semáforo en rojo."""
+        """Detiene al agente si encuentra un semáforo en rojo o un peatón en frente."""
         direction_vectors = {
             'left': (-1, 0),
             'right': (1, 0),
@@ -195,12 +243,10 @@ class CarAgent(mesa.Agent):
             'down': (0, 1),
         }
 
-        # Si no hay una dirección previa, calcula el siguiente paso
         if not self.last_direction:
             self.move()
             return
 
-        # Calcula la posición frente al agente basada en la dirección actual
         move_vector = direction_vectors.get(self.last_direction)
         if not move_vector:
             self.move()
@@ -208,21 +254,22 @@ class CarAgent(mesa.Agent):
 
         front_position = (self.pos[0] + move_vector[0], self.pos[1] + move_vector[1])
 
-        # Si la posición frente al agente está fuera del rango del grid
-        if not (0 <= front_position[0] < self.model.width and 0 <= front_position[1] < self.model.height):
-            self.move()
+        # Verifica si hay un semáforo en rojo
+        if not self.model.grid.out_of_bounds(front_position):
+            cell_contents = self.model.grid.get_cell_list_contents(front_position)
+            for agent in cell_contents:
+                if isinstance(agent, Traffic_light) and not agent.state:
+                    print(f"Agente {self.unique_id} detenido por semáforo rojo en {front_position}")
+                    return
+
+        # Verifica si hay un peatón
+        if self.detect_pedestrian():
+            print(f"Agente {self.unique_id} detenido para ceder paso al peatón.")
             return
 
-        # Verifica el contenido de la celda frente al agente
-        cell_contents = self.model.grid.get_cell_list_contents(front_position)
-        for agent in cell_contents:
-            # Si hay un semáforo y está en rojo, detén al agente
-            if isinstance(agent, Traffic_light) and not agent.state:
-                print(f"Agente {self.unique_id} detenido por semáforo rojo en {front_position}")
-                return
-
-        # Si no hay un semáforo en rojo, el agente puede moverse
+        # Si no hay nada que lo detenga, el agente puede moverse
         self.move()
+
 
     def step(self):
         """Define el comportamiento del agente en cada paso."""
@@ -231,6 +278,8 @@ class CarAgent(mesa.Agent):
             self.model.grid.remove_agent(self)
             self.model.schedule.remove(self)
         else:
-            # Primero verifica si debe detenerse en un semáforo
+            # Primero verifica si debe detenerse en un semáforo o por un peatón
             self.is_stop()
+
+
 
