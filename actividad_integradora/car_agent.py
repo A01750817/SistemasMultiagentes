@@ -31,6 +31,17 @@ class CarAgent(mesa.Agent):
         astar = Astar(self.model, self.pos, self.destination)
         return astar.find_path()
     
+    def recalculate_path(self):
+        """
+        Recalcula la ruta en tiempo real si hay bloqueos o cambios en el entorno.
+        """
+        new_path = Astar(self.model, self.pos, self.destination).find_path()
+        if new_path:
+            self.path = new_path
+            print(f"Coche {self.unique_id}: Ruta recalculada desde {self.pos} hacia {self.destination}.")
+        else:
+            print(f"Coche {self.unique_id}: No se pudo recalcular la ruta desde {self.pos}.")
+    
     def stop_for_pedestrian(self):
         """
         Detiene el coche temporalmente al recibir una solicitud de un peatón.
@@ -280,14 +291,35 @@ class CarAgent(mesa.Agent):
 
 
     def step(self):
-        """Define el comportamiento del agente en cada paso."""
+        """
+        Define el comportamiento del agente coche en cada paso.
+        """
         if self.pos == self.destination:
-            print(f"Agente {self.unique_id} alcanzó su destino en {self.destination}")
+            print(f"Coche {self.unique_id}: Ha llegado a su destino {self.destination}.")
             self.model.grid.remove_agent(self)
             self.model.schedule.remove(self)
+            return
+
+        if not self.path or self.pos != self.path[0]:
+            self.path = self.calculate_path()
+
+        if not self.path:
+            print(f"Coche {self.unique_id}: No tiene una ruta válida desde {self.pos}.")
+            return
+
+        next_step = self.path.pop(0)
+
+        # Verificar si el siguiente paso está permitido y no ocupado por otro agente
+        if not self.__is_there_a_car(next_step):
+            self.prev_cell = self.pos  # Actualiza la celda anterior
+            self.__give_priority()  # Actualiza la prioridad antes de moverse
+            self.__calculate_prev()  # Actualiza la dirección previa
+            self.model.grid.move_agent(self, next_step)
+            self.pos = next_step
+            print(f"Coche {self.unique_id}: Se movió a {self.pos}.")
         else:
-            # Primero verifica si debe detenerse en un semáforo o por un peatón
-            self.is_stop()
+            print(f"Coche {self.unique_id}: Detectó un coche en {next_step}, recalculando ruta.")
+            self.recalculate_path()
 
 
 
