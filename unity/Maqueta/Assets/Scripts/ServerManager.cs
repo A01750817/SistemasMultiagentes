@@ -6,9 +6,13 @@ using System.Collections.Generic;
 public class ServerManager : MonoBehaviour
 {
     public List<GameObject> carModels; // Modelos de autos
+    public List<GameObject> pedestrianModels; // Modelos de peatones
     private Dictionary<string, GameObject> carObjects = new Dictionary<string, GameObject>();
+    private Dictionary<string, GameObject> pedestrianObjects = new Dictionary<string, GameObject>();
     private Dictionary<string, List<Vector3>> carPaths = new Dictionary<string, List<Vector3>>(); // Rutas de los autos
-    private Dictionary<string, LineRenderer> carLineRenderers = new Dictionary<string, LineRenderer>(); // Líneas de recorrido
+    private Dictionary<string, List<Vector3>> pedestrianPaths = new Dictionary<string, List<Vector3>>(); // Rutas de los peatones
+    private Dictionary<string, LineRenderer> carLineRenderers = new Dictionary<string, LineRenderer>(); // Líneas de recorrido de autos
+    private Dictionary<string, LineRenderer> pedestrianLineRenderers = new Dictionary<string, LineRenderer>(); // Líneas de recorrido de peatones
     private string baseUrl = "http://localhost:5000"; // URL base del servidor Flask
 
     void Start()
@@ -16,13 +20,9 @@ public class ServerManager : MonoBehaviour
         StartCoroutine(InitializeSimulation());
     }
 
-    void Update()
-    {
-    }
-
     IEnumerator InitializeSimulation()
     {
-        yield return StartCoroutine(UpdateCarPositions());
+        yield return StartCoroutine(UpdateAgentPositions());
         StartCoroutine(UpdatePositionsLoop());
     }
 
@@ -30,13 +30,13 @@ public class ServerManager : MonoBehaviour
     {
         while (true)
         {
-            yield return StartCoroutine(UpdateCarPositions());
+            yield return StartCoroutine(UpdateAgentPositions());
             yield return StartCoroutine(StepSimulation());
             yield return new WaitForSeconds(1.0f); // Intervalo entre pasos de simulación
         }
     }
 
-    IEnumerator UpdateCarPositions()
+    IEnumerator UpdateAgentPositions()
     {
         string url = $"{baseUrl}/get_coordinates";
         using (UnityWebRequest uwr = UnityWebRequest.Get(url))
@@ -50,7 +50,7 @@ public class ServerManager : MonoBehaviour
             else
             {
                 Debug.Log($"GET Success from {url}: {uwr.downloadHandler.text}");
-                ProcessCarResponse(uwr.downloadHandler.text);
+                ProcessAgentResponse(uwr.downloadHandler.text);
             }
         }
     }
@@ -74,86 +74,148 @@ public class ServerManager : MonoBehaviour
         }
     }
 
-    void ProcessCarResponse(string json)
+    void ProcessAgentResponse(string json)
     {
-        CarPositions carPositions = JsonUtility.FromJson<CarPositions>(json);
-        foreach (CarPosition car in carPositions.car_positions)
+        AgentPositions agentPositions = JsonUtility.FromJson<AgentPositions>(json);
+
+        // Procesar posiciones de autos
+        foreach (CarPosition car in agentPositions.car_positions)
         {
-            Vector3 targetPosition = new Vector3(car.x, car.y, car.z);
+            ProcessCarPosition(car.id, car.x, car.y, car.z);
+        }
 
-            if (carObjects.ContainsKey(car.id))
-            {
-                // Antes de mover, actualizar la ruta y el LineRenderer
-                UpdateCarPath(car.id, carObjects[car.id].transform.position);
-                StartCoroutine(MoveObject(carObjects[car.id], targetPosition, 0.5f));
-            }
-            else
-            {
-                // Instanciar nuevo auto
-                GameObject newCar = Instantiate(GetRandomCarModel(), targetPosition, Quaternion.identity);
-                carObjects[car.id] = newCar;
-
-                // Crear ruta inicial
-                carPaths[car.id] = new List<Vector3> { targetPosition };
-
-                // Agregar LineRenderer
-                LineRenderer lineRenderer = newCar.AddComponent<LineRenderer>();
-                lineRenderer.positionCount = 1;
-                lineRenderer.SetPosition(0, targetPosition);
-                lineRenderer.startWidth = 0.1f;
-                lineRenderer.endWidth = 0.1f;
-                lineRenderer.material = new Material(Shader.Find("Sprites/Default")) { color = Color.red };
-                carLineRenderers[car.id] = lineRenderer;
-            }
+        // Procesar posiciones de peatones
+        foreach (PedestrianPosition pedestrian in agentPositions.pedestrian_positions)
+        {
+            ProcessPedestrianPosition(pedestrian.id, pedestrian.x, pedestrian.y, pedestrian.z);
         }
     }
 
-    void UpdateCarPath(string carId, Vector3 currentPosition)
+    void ProcessCarPosition(string id, float x, float y, float z)
     {
-        if (carPaths.ContainsKey(carId))
+        ProcessPosition(
+            id, 
+            x, 
+            y, 
+            z, 
+            carObjects, 
+            carPaths, 
+            carLineRenderers, 
+            carModels, 
+            0.5f, 
+            Color.red, 
+            true
+        );
+    }
+
+    void ProcessPedestrianPosition(string id, float x, float y, float z)
+    {
+        ProcessPosition(
+            id, 
+            x, 
+            y, 
+            z, 
+            pedestrianObjects, 
+            pedestrianPaths, 
+            pedestrianLineRenderers, 
+            pedestrianModels, 
+            0.7f, 
+            Color.blue, 
+            false
+        );
+    }
+
+    void ProcessPosition(
+        string id,
+        float x,
+        float y,
+        float z,
+        Dictionary<string, GameObject> objects,
+        Dictionary<string, List<Vector3>> paths,
+        Dictionary<string, LineRenderer> lineRenderers,
+        List<GameObject> models,
+        float duration,
+        Color lineColor,
+        bool rotateForCars
+    )
+    {
+        Vector3 targetPosition = new Vector3(x, y, z);
+
+        if (objects.ContainsKey(id))
+        {
+            // Antes de mover, actualizar la ruta y el LineRenderer
+            UpdatePath(id, objects[id].transform.position, paths, lineRenderers);
+            StartCoroutine(MoveObject(objects[id], targetPosition, duration, rotateForCars));
+        }
+        else
+        {
+            // Instanciar nuevo objeto
+            GameObject newObject = Instantiate(GetRandomModel(models), targetPosition, Quaternion.identity);
+            objects[id] = newObject;
+
+            // Crear ruta inicial
+            paths[id] = new List<Vector3> { targetPosition };
+
+            // Agregar LineRenderer
+            LineRenderer lineRenderer = newObject.AddComponent<LineRenderer>();
+            lineRenderer.positionCount = 1;
+            lineRenderer.SetPosition(0, targetPosition);
+            lineRenderer.startWidth = 0.1f;
+            lineRenderer.endWidth = 0.1f;
+            lineRenderer.material = new Material(Shader.Find("Sprites/Default")) { color = lineColor };
+            lineRenderers[id] = lineRenderer;
+        }
+    }
+
+    void UpdatePath(string id, Vector3 currentPosition, Dictionary<string, List<Vector3>> paths, Dictionary<string, LineRenderer> lineRenderers)
+    {
+        if (paths.ContainsKey(id))
         {
             // Agregar la posición actual a la ruta
-            carPaths[carId].Add(currentPosition);
+            paths[id].Add(currentPosition);
 
             // Actualizar el LineRenderer
-            LineRenderer lineRenderer = carLineRenderers[carId];
-            lineRenderer.positionCount = carPaths[carId].Count;
-            lineRenderer.SetPositions(carPaths[carId].ToArray());
+            LineRenderer lineRenderer = lineRenderers[id];
+            lineRenderer.positionCount = paths[id].Count;
+            lineRenderer.SetPositions(paths[id].ToArray());
         }
     }
 
-    GameObject GetRandomCarModel()
+    GameObject GetRandomModel(List<GameObject> models)
     {
-        return carModels[Random.Range(0, carModels.Count)];
+        return models[Random.Range(0, models.Count)];
     }
 
-    IEnumerator MoveObject(GameObject obj, Vector3 targetPosition, float duration)
+    IEnumerator MoveObject(GameObject obj, Vector3 targetPosition, float duration, bool rotateForCars)
     {
         Vector3 startPosition = obj.transform.position;
         float elapsedTime = 0;
 
-        // Determinar la rotación antes de mover
-        Vector3 direction = targetPosition - startPosition;
-        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.z))
+        if (rotateForCars)
         {
-            if (direction.x > 0)
+            // Determinar la rotación antes de mover
+            Vector3 direction = targetPosition - startPosition;
+            if (Mathf.Abs(direction.x) > Mathf.Abs(direction.z))
             {
-                obj.transform.rotation = Quaternion.Euler(0, 90, 0); // Girar hacia la derecha
+                if (direction.x > 0)
+                {
+                    obj.transform.rotation = Quaternion.Euler(0, 90, 0); // Girar hacia la derecha
+                }
+                else
+                {
+                    obj.transform.rotation = Quaternion.Euler(0, -90, 0); // Girar hacia la izquierda
+                }
             }
             else
             {
-                obj.transform.rotation = Quaternion.Euler(0, -90, 0); // Girar hacia la izquierda
-            }
-        }
-        else
-        {
-            if (direction.z > 0)
-            {
-                obj.transform.rotation = Quaternion.Euler(0, 0, 0); // Avanzar hacia adelante
-            }
-            else
-            {
-                obj.transform.rotation = Quaternion.Euler(0, 180, 0); // Girar para retroceder
+                if (direction.z > 0)
+                {
+                    obj.transform.rotation = Quaternion.Euler(0, 0, 0); // Avanzar hacia adelante
+                }
+                else
+                {
+                    obj.transform.rotation = Quaternion.Euler(0, 180, 0); // Girar para retroceder
+                }
             }
         }
 
@@ -170,13 +232,23 @@ public class ServerManager : MonoBehaviour
 }
 
 [System.Serializable]
-public class CarPositions
+public class AgentPositions
 {
     public List<CarPosition> car_positions;
+    public List<PedestrianPosition> pedestrian_positions;
 }
 
 [System.Serializable]
 public class CarPosition
+{
+    public string id;
+    public float x;
+    public float y;
+    public float z;
+}
+
+[System.Serializable]
+public class PedestrianPosition
 {
     public string id;
     public float x;
