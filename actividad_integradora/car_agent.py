@@ -229,9 +229,17 @@ class CarAgent(mesa.Agent):
                     print(f"Prioridad del agente {self.unique_id}: {self.priority}")
                     return
 
+            print(f"Coche {self.unique_id} no puede moverse porque no hay direcciones permitidas desde {self.pos}.")
+            return
+
         # Si no puede moverse, intenta cambiar de carril
         if not self.__change_lanes():
-            print(f"Agente {self.unique_id} no puede moverse desde {self.pos} ni cambiar de carril.")
+            if self.__is_there_a_car(next_step):
+                print(f"Coche {self.unique_id} no puede moverse porque hay otro coche en {next_step}.")
+            elif self.__is_there_a_pedestrian(next_step):
+                print(f"Coche {self.unique_id} no puede moverse porque hay un peatón en {next_step}.")
+            else:
+                print(f"Coche {self.unique_id} no puede moverse porque hay un obstáculo en {next_step}.")
 
 
     def is_stop(self):
