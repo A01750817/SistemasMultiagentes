@@ -21,6 +21,11 @@ class BuildingAgent(mesa.Agent):
         super().__init__(unique_id, model)
         self.type = "building"  # Identificar el agente como edificio
         
+class BusAgentStop(mesa.Agent):
+    def __init__(self, unique_id, model):
+        super().__init__(unique_id, model)
+        self.type = "BusAgentStop"  # Identificar el agente como edificio
+        
 #Clase que define el modelo de la ciudad y genera sus agentes
 class cityClass(mesa.Model):
     """
@@ -64,14 +69,14 @@ class cityClass(mesa.Model):
         self.traffic_lights = []
         self.garajes = [(4,4), (4, 11), (2, 8), (8, 9), (9, 2), (10, 11), (11, 6), (17, 2), (20, 5), (20, 8), 
            (18, 11), (3, 17), (10, 16), (4, 20), (8, 21), (17, 17), (21, 20)]
-        self.bus_stops = [(2,21),(11,21)]
+        self.bus_stops = [(2,22),(11,22),(12, 4)]
         self.celdas_restringidas = [
             (2, 2), (2, 3), (2, 4), (3, 2), (3, 3), (3, 4), (4, 2), (4, 3), (4, 4), (5, 2), (5, 3), (5, 4),
             (2, 7), (3, 7), (4, 7), (5, 7), (3, 8), (4, 8), (5, 8), (2, 9), (3, 9), (4, 9), (5, 9),
             (2, 10), (3, 10), (4, 10), (5, 10), (2, 11), (3, 11), (5, 11),
             (8, 2), (8, 3), (8, 4), (8, 5), (8, 6), (8, 7), (8, 8), (8, 10), (8, 11), (9, 3), (9, 4),
             (9, 5), (9, 6), (9, 7), (9, 8), (9, 9), (9, 10), (9, 11), (10, 2), (10, 3), (10, 4), (10, 5),
-            (10, 6), (10, 7), (10, 8), (10, 9), (10, 10), (11, 2), (11, 3), (11, 4), (11, 5), (11, 7),
+            (10, 6), (10, 7), (10, 8), (10, 9), (10, 10), (11, 2), (11, 3), (11, 5), (11, 7),
             (11, 8), (11, 9), (11, 10), (11, 11), (16, 2), (16, 3), (16, 4), (16, 5), (17, 3), (17, 4),
             (17, 5), (20, 2), (20, 3), (20, 4), (21, 2), (21, 3), (21, 4), (21, 5), (16, 8), (16, 9),
             (16, 10), (16, 11), (17, 8), (17, 9), (17, 10), (17, 11), (18, 8), (18, 9), (18, 10), (19, 8),
@@ -81,7 +86,7 @@ class cityClass(mesa.Model):
             (5, 20), (6, 20), (7, 20), (8, 20), (9, 20), (11, 20), (10, 20), (3, 21), (4, 21),
             (5, 21), (6, 21), (7, 21), (9, 21), (10, 21), (16, 16), (16, 17), (17, 16),
             (16, 20), (16, 21), (17, 20), (17, 21), (20, 16), (20, 17), (21, 16), (21, 17), (20, 20),
-            (20, 21), (21, 21), (13, 13), (14, 13), (14, 14), (13, 14),
+            (20, 21), (21, 21), (13, 13), (14, 13), (14, 14), (13, 14), (11,4), (19,8), (2,21), (11,21)
         ]
 
         # Define direcciones
@@ -92,7 +97,9 @@ class cityClass(mesa.Model):
             [(x, y) for x in range(16,24) for y in range(12,14)],
             [(x, y) for x in range(16,24) for y in range(18,20)],
             [(x, y) for x in range(13, 17) for y in range(12, 13)],
-            [(2, 8), (8, 9), (12, 6), (18, 2), (20, 5), (18, 17), (22, 20)]
+            [(2, 8), (8, 9), (12, 6), (18, 2), (20, 5), (18, 17), (22, 20), 
+            #  (12,4)
+             ]
         ]
 
         direcciones_derecha = [
@@ -102,7 +109,9 @@ class cityClass(mesa.Model):
             [(x, y) for x in range(14,22) for y in range(6,8)],
             [(x, y) for x in range(-1, 24) for y in range(22,24)],
             [(x, y) for x in range(11, 15) for y in range(15, 16)],
-            [(1, 8), (7, 9), (11, 6), (17, 2), (19, 5), (17, 17), (21, 20)]
+            [(1, 8), (7, 9), (11, 6), (17, 2), (19, 5), (17, 17), (21, 20), 
+            #  (11, 4)
+             ]
         ]
 
         direcciones_abajo = [
@@ -113,7 +122,10 @@ class cityClass(mesa.Model):
             [(x, y) for x in range(18, 20) for y in range(14, 22)],
             [(x, y) for x in range(12, 13) for y in range(12, 15)],
             [(9, 1), (4, 19), (8, 21), (3, 17), (4, 4), (4, 11), (10, 11),
-             (18, 11), (20, 7), (10, 15), (17, 1), (20, 5), (17, 17), (21, 19),(2,21)]
+             (18, 11), (20, 7), (10, 15), (17, 1), (20, 5), (17, 17), (21, 19),
+            #  (2,21),
+             #(11,21)
+            ]
         ]
 
         direcciones_arriba = [
@@ -123,7 +135,10 @@ class cityClass(mesa.Model):
             [(x, y) for x in range(18, 20) for y in range(2, 8)],
             [(x, y) for x in range(15, 16) for y in range(12, 17)],
             [(9, 2), (4, 20), (8, 22), (3, 18), (4, 5), (4, 12), (10, 12), 
-             (18, 12), (20, 8), (10, 16), (17, 2), (20, 6), (17, 18), (21, 20),(11,22)]
+             (18, 12), (20, 8), (10, 16), (17, 2), (20, 6), (17, 18), (21, 20),
+            #  (11,22),
+            #  (2,22)
+             ]
         ]
 
         # Crea diccionario con direcciones permitidas
@@ -166,48 +181,29 @@ class cityClass(mesa.Model):
     # actividad_model.py
 
     def create_agents_bus(self):
-        # Lista para rastrear las posiciones de los garajes ya utilizados
-        used_positions = []
+        # Lista de paradas del autobús en orden (no predefinida)
+        # Aquí no definimos una ruta fija, el autobús determinará dinámicamente la siguiente parada
+
+        # Posición inicial del autobús (puede ser una celda adyacente a la primera parada)
+        start_position = (12, 5)  # Asegúrate de que esta posición sea válida y no esté restringida
+
+        # Verifica que la celda esté libre
+        if not self.grid.is_cell_empty(start_position):
+            print(f"La posición inicial del autobús {start_position} está ocupada.")
+            return
+
+        # Crea una ruta inicial para el autobús
+        ruta_Autobus = [start_position] + self.bus_stops.copy()
+
+        # Crea una instancia del BusAgent con la ruta predefinida
+        bus = BusAgent(self, self.next_id(), start_position, None, self.bus_stops.copy())
+
+        # Coloca el autobús en la posición inicial dentro de la cuadrícula del modelo
+        self.grid.place_agent(bus, start_position)
+
+        # Añade el autobús al scheduler para que sea activado en cada paso de la simulación
+        self.schedule.add(bus)      
         
-        # Itera sobre el número de agentes a crear
-        for i in range(1):
-            # Selecciona aleatoriamente un garaje que no haya sido usado anteriormente
-            stopBus = self.random.choice([g for g in self.bus_stops if g not in used_positions])
-            # Asegúrate de que el garage es válido (dentro del rango y no restringido)
-            if self.grid.out_of_bounds(stopBus) or stopBus in self.celdas_restringidas:
-                continue
-            
-            # Agrega la posición del garaje a la lista de posiciones utilizadas
-            used_positions.append(stopBus)
-            
-            # Selecciona aleatoriamente un destino que sea diferente al garaje seleccionado
-            destination = self.random.choice([g for g in self.bus_stops if g != stopBus])
-            
-            # Verifica que 'destination' es una tupla
-            if not isinstance(destination, tuple):
-                raise TypeError(f"El destino debe ser una tupla, pero se recibió: {destination} de tipo {type(destination)}")
-            
-            # Depuración: Imprime las posiciones seleccionadas
-            print(f"Creando BusAgent {i} con Posición: {stopBus} y Destino: {destination}")
-            
-            # Crea una lista de ruta que incluya el garaje y el destino
-            ruta_Autobus = [stopBus, destination]
-            
-            # Crea una instancia del agente BusAgent con los parámetros correspondientes
-            bus = BusAgent(self, i, stopBus, None, ruta_Autobus)
-            
-            # Remueve cualquier agente existente en la posición antes de colocar uno nuevo
-            existing_agents = self.grid.get_cell_list_contents(stopBus)
-            for agent in existing_agents:
-                self.grid.remove_agent(agent)
-            
-            # Coloca el agente en la posición del garaje dentro de la cuadrícula del modelo
-            self.grid.place_agent(bus, stopBus)
-            
-            # Añade el agente al scheduler para que sea activado en cada paso de la simulación
-            self.schedule.add(bus)
-
-
     def create_traffic_lights(self):
         """
         Crea y organiza los semáforos agrupados por intersección con nombres asignados.

@@ -11,7 +11,7 @@
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from actividad_model import cityClass, CarAgent, Traffic_light, BuildingAgent, BusAgent
+from actividad_model import cityClass, CarAgent, Traffic_light, BuildingAgent, BusAgent, BusAgentStop
 
 # Define la lista de edificios (si prefieres mantenerla aquí)
 edificios = [
@@ -30,7 +30,7 @@ edificios = [
     (5, 20), (6, 20), (7, 20), (8, 20), (9, 20), (11, 20), (10, 20), (3, 21), (4, 21), 
     (5, 21), (6, 21), (7, 21), (9, 21), (10, 21), (11, 21), (16, 16), (16, 17), (17, 16), 
     (16, 20), (16, 21), (17, 20), (17, 21), (20, 16), (20, 17), (21, 16), (21, 17), (20, 20), 
-    (20, 21), (21, 21), (13, 13), (14, 13), (14, 14), (13, 14),
+    (20, 21), (21, 21), (13, 13), (14, 13), (14, 14), (13, 14), (11,4), (19,8), (2,21), (11,21)
 ]
 
 def plot_grid(model, ax):
@@ -53,6 +53,11 @@ def plot_grid(model, ax):
     # Dibujar garajes
     for (x, y) in model.garajes:
         rect = patches.Rectangle((x, y), 1, 1, linewidth=1, edgecolor='black', facecolor='yellow')
+        ax.add_patch(rect)
+        
+    # Dibujar busstop
+    for (x, y) in model.bus_stops:
+        rect = patches.Rectangle((x, y), 1, 1, linewidth=1, edgecolor='black', facecolor='cyan')
         ax.add_patch(rect)
 
     # Dibujar direcciones permitidas (opcional, si deseas incluir flechas)
@@ -93,6 +98,9 @@ def plot_grid(model, ax):
             elif isinstance(obj, BusAgent):
                 rect = patches.Rectangle((x, y), 1, 1, linewidth=1, edgecolor='black', facecolor='green')
                 ax.add_patch(rect)
+            # elif isinstance(obj, BusAgentStop):
+            #     rect = patches.Rectangle((x, y), 1, 1, linewidth=1, edgecolor='black', facecolor='green')
+            #     ax.add_patch(rect)
 
                  
 
