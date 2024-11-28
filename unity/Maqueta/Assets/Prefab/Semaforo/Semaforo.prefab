@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 6841088303526956202}
   - component: {fileID: 8662913246637183400}
   m_Layer: 0
-  m_Name: LuzRoja
+  m_Name: RedLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -75,7 +75,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5374039032867760428}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 0.98490566, g: 0.013008137, b: 0.062483266, a: 1}
@@ -168,7 +168,7 @@ GameObject:
   - component: {fileID: 1560968331805418314}
   - component: {fileID: 6622774540634579182}
   m_Layer: 0
-  m_Name: LuzVerde
+  m_Name: GreenLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -196,7 +196,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8147015722309033580}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 0.04116129, g: 0.4943396, b: 0.032645, a: 1}
@@ -403,7 +403,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8976990063553578818}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 11
   m_Type: 2
   m_Color: {r: 0.8539785, g: 0.9245283, b: 0, a: 1}

@@ -12,7 +12,7 @@ city_model = cityClass(numberAgents=num_agentsA, numberAgentsP=num_agentsP, widt
 
 @app.route('/get_coordinates', methods=['GET'])
 def get_coordinates():
-    """Devuelve las coordenadas de los agentes al cliente (Unity)."""
+    """Devuelve las coordenadas de los agentes al cliente (Unity), incluyendo estados de semáforos."""
     scale = 1.4  # Ajusta según el cálculo de escala
     offset_x = -12  # Offset para centrar el mapa en Unity
     offset_z = 20  # Offset para centrar el mapa en Unity
@@ -41,10 +41,26 @@ def get_coordinates():
         for agent in city_model.schedule.agents if isinstance(agent, PersonAgent)
     ]
 
-    # Combina ambas listas en un único JSON
+    # Estados de los semáforos
+    traffic_light_states = [
+    {
+        "id": light.unique_id,
+        "position": {
+            "x": light.pos[0] * scale,
+            "y": 0.2,  # Altura fija para los semáforos en Unity
+            "z": -light.pos[1] * scale
+        },
+        "state": light.state,  # Enviar directamente el estado booleano (true o false)
+        "quadrant": light.quadrant_name  # Nombre del cuadrante
+    }
+    for light in city_model.traffic_lights
+    ]
+
+    # Combina todos los datos en un único JSON
     agent_positions = {
         "car_positions": car_positions,
-        "pedestrian_positions": pedestrian_positions
+        "pedestrian_positions": pedestrian_positions,
+        "traffic_lights": traffic_light_states
     }
 
     return jsonify(agent_positions)

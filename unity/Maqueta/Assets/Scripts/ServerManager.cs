@@ -7,12 +7,16 @@ public class ServerManager : MonoBehaviour
 {
     public List<GameObject> carModels; // Modelos de autos
     public List<GameObject> pedestrianModels; // Modelos de peatones
+    public List<GameObject> trafficLightObjects; // Lista de semáforos ya colocados en la escena
+
     private Dictionary<string, GameObject> carObjects = new Dictionary<string, GameObject>();
     private Dictionary<string, GameObject> pedestrianObjects = new Dictionary<string, GameObject>();
+
     private Dictionary<string, List<Vector3>> carPaths = new Dictionary<string, List<Vector3>>(); // Rutas de los autos
     private Dictionary<string, List<Vector3>> pedestrianPaths = new Dictionary<string, List<Vector3>>(); // Rutas de los peatones
     private Dictionary<string, LineRenderer> carLineRenderers = new Dictionary<string, LineRenderer>(); // Líneas de recorrido de autos
     private Dictionary<string, LineRenderer> pedestrianLineRenderers = new Dictionary<string, LineRenderer>(); // Líneas de recorrido de peatones
+
     private string baseUrl = "http://localhost:5000"; // URL base del servidor Flask
 
     void Start()
@@ -89,21 +93,39 @@ public class ServerManager : MonoBehaviour
         {
             ProcessPedestrianPosition(pedestrian.id, pedestrian.x, pedestrian.y, pedestrian.z);
         }
+
+        // Procesar estados de semáforos
+        for (int i = 0; i < agentPositions.traffic_lights.Count && i < trafficLightObjects.Count; i++)
+        {
+            TrafficLightState lightState = agentPositions.traffic_lights[i];
+            GameObject trafficLight = trafficLightObjects[i];
+
+            TrafficLightController controller = trafficLight.GetComponent<TrafficLightController>();
+            if (controller != null)
+            {
+                // Actualiza el estado del semáforo
+                controller.UpdateTrafficLightState(lightState.state);
+            }
+            else
+            {
+                Debug.LogError($"Error: {trafficLight.name} no tiene un componente TrafficLightController.");
+            }
+        }
     }
 
     void ProcessCarPosition(string id, float x, float y, float z)
     {
         ProcessPosition(
-            id, 
-            x, 
-            y, 
-            z, 
-            carObjects, 
-            carPaths, 
-            carLineRenderers, 
-            carModels, 
-            0.5f, 
-            Color.red, 
+            id,
+            x,
+            y,
+            z,
+            carObjects,
+            carPaths,
+            carLineRenderers,
+            carModels,
+            0.5f,
+            Color.red,
             true
         );
     }
@@ -111,16 +133,16 @@ public class ServerManager : MonoBehaviour
     void ProcessPedestrianPosition(string id, float x, float y, float z)
     {
         ProcessPosition(
-            id, 
-            x, 
-            y, 
-            z, 
-            pedestrianObjects, 
-            pedestrianPaths, 
-            pedestrianLineRenderers, 
-            pedestrianModels, 
-            0.7f, 
-            Color.blue, 
+            id,
+            x,
+            y,
+            z,
+            pedestrianObjects,
+            pedestrianPaths,
+            pedestrianLineRenderers,
+            pedestrianModels,
+            0.7f,
+            Color.blue,
             false
         );
     }
@@ -236,6 +258,7 @@ public class AgentPositions
 {
     public List<CarPosition> car_positions;
     public List<PedestrianPosition> pedestrian_positions;
+    public List<TrafficLightState> traffic_lights; // Añadido para manejar semáforos
 }
 
 [System.Serializable]
@@ -254,4 +277,10 @@ public class PedestrianPosition
     public float x;
     public float y;
     public float z;
+}
+
+[System.Serializable]
+public class TrafficLightState
+{
+    public bool state; // Estado del semáforo (true para verde, false para rojo)
 }
