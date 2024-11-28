@@ -9713,6 +9713,7 @@ MonoBehaviour:
   - {fileID: 2000886188}
   - {fileID: 1483194794}
   - {fileID: 109366156}
+  enableTrails: 0
 --- !u!1001 &789704114
 PrefabInstance:
   m_ObjectHideFlags: 0

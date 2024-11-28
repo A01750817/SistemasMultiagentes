@@ -9,6 +9,8 @@ public class ServerManager : MonoBehaviour
     public List<GameObject> pedestrianModels; // Modelos de peatones
     public List<GameObject> trafficLightObjects; // Lista de semáforos ya colocados en la escena
 
+    public bool enableTrails = true; // Controla si se generan trazados (líneas) para los agentes
+
     private Dictionary<string, GameObject> carObjects = new Dictionary<string, GameObject>();
     private Dictionary<string, GameObject> pedestrianObjects = new Dictionary<string, GameObject>();
 
@@ -165,8 +167,11 @@ public class ServerManager : MonoBehaviour
 
         if (objects.ContainsKey(id))
         {
-            // Antes de mover, actualizar la ruta y el LineRenderer
-            UpdatePath(id, objects[id].transform.position, paths, lineRenderers);
+            // Antes de mover, actualizar la ruta y el LineRenderer (solo si los trazados están habilitados)
+            if (enableTrails)
+            {
+                UpdatePath(id, objects[id].transform.position, paths, lineRenderers);
+            }
             StartCoroutine(MoveObject(objects[id], targetPosition, duration, rotateForCars));
         }
         else
@@ -176,16 +181,19 @@ public class ServerManager : MonoBehaviour
             objects[id] = newObject;
 
             // Crear ruta inicial
-            paths[id] = new List<Vector3> { targetPosition };
+            if (enableTrails)
+            {
+                paths[id] = new List<Vector3> { targetPosition };
 
-            // Agregar LineRenderer
-            LineRenderer lineRenderer = newObject.AddComponent<LineRenderer>();
-            lineRenderer.positionCount = 1;
-            lineRenderer.SetPosition(0, targetPosition);
-            lineRenderer.startWidth = 0.1f;
-            lineRenderer.endWidth = 0.1f;
-            lineRenderer.material = new Material(Shader.Find("Sprites/Default")) { color = lineColor };
-            lineRenderers[id] = lineRenderer;
+                // Agregar LineRenderer
+                LineRenderer lineRenderer = newObject.AddComponent<LineRenderer>();
+                lineRenderer.positionCount = 1;
+                lineRenderer.SetPosition(0, targetPosition);
+                lineRenderer.startWidth = 0.1f;
+                lineRenderer.endWidth = 0.1f;
+                lineRenderer.material = new Material(Shader.Find("Sprites/Default")) { color = lineColor };
+                lineRenderers[id] = lineRenderer;
+            }
         }
     }
 
