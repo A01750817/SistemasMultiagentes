@@ -3,9 +3,12 @@
 # Instrucciones de instalación
 
 ## Instalación de herramientas
-Para poder ejecutar el proyecto de forma correcta, se requiere de lo siguiente 
+Para poder ejecutar el proyecto de forma correcta, se requiere de lo siguiente:
+
 -[VsCode](code.visualstudio.com)
+
 -[Python](python.org)
+
 -[Unity](unity.com)
 
 ## Instalación del proyecto
@@ -35,3 +38,17 @@ cd sma
 python tablero.py
 ```
 6. Ejecutar simulación en Unity
+Para ejecutar la simulación con visualización en Unity se debe de seguir los siguientes pasos:
+- En Python:
+Ejecutar los siguientes comandos:
+```bash
+cd sma
+```
+```bash
+python server.py
+```
+- En Unity:
+1. Añadir desde Unity Hub la carpeta de la simulación con nombre `Maqueta`
+2. Abrir el proyecto
+3. Dar click en el botón de play para visualizar la simulación
+4. Presionar las teclas 1, 2, 3, 4 si se quiere cambiar la vista de la cámara
