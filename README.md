@@ -1,1 +1,37 @@
 # SistemasMultiagentes
+
+# Instrucciones de instalación
+
+## Instalación de herramientas
+Para poder ejecutar el proyecto de forma correcta, se requiere de lo siguiente 
+-[VsCode](code.visualstudio.com)
+-[Python](python.org)
+-[Unity](unity.com)
+
+## Instalación del proyecto
+1. Clonar el repositorio 
+```bash 
+git clone https://github.com/A01750817/SistemasMultiagentes.git
+``` 
+Este proceso puede ser tardado, por lo que se puede decargar el .zip de igual forma 
+2. Instalar dependencias
+```bash
+pip install mesa fastapi matplotlib flask uvicorn
+```
+En caso de tener problemas con la instalación verificar que pip este actualizando utilizando:
+```bash
+pip install --upgrade pip
+```
+4. Moverse al directorio del repositorio
+```bash
+code SistemasMultiagentes
+```
+5. Ejecutar simulación en Matplotlib
+Para ejecutar la simulación con visualización en Matplotlib seguir los siguientes comandos:
+```bash
+cd sma
+```
+```bash
+python tablero.py
+```
+6. Ejecutar simulación en Unity
