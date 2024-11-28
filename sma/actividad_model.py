@@ -447,6 +447,16 @@ class cityClass(mesa.Model):
         ]
 
         directions_pedestrian_down = [
+            [(x, y) for x in range(7, 8) for y in range(6, 10)],
+            [(x, y) for x in range(7, 8) for y in range(15, 20)],
+            [(x, y) for x in range(10, 11) for y in range(15, 20)],
+            [(x, y) for x in range(15, 16) for y in range(15, 20)],
+            [(x, y) for x in range(20, 21) for y in range(15, 20)],
+            [(x, y) for x in range(20, 21) for y in range(6, 10)],
+            [(x, y) for x in range(23, 24) for y in range(6, 10)],
+            [(x, y) for x in range(26, 27) for y in range(6, 10)],
+            [(x, y) for x in range(15, 16) for y in range(23, 21)],
+        
             #Edificio 1 Caminos banqueta
             [(x, y) for x in range(7, 8) for y in range(1, 6)],
             [(x, y) for x in range(2, 3) for y in range(1, 6)],
@@ -537,6 +547,7 @@ class cityClass(mesa.Model):
             #Edificio 10 Caminos banqueta
             [(x, y) for x in range(21, 25) for y in range(20, 21)],
             [(x, y) for x in range(21, 25) for y in range(23, 24)],
+            [(x, y) for x in range(24, 28) for y in range(20, 21)],
 
             #Edificio 11 Caminos banqueta
             [(x, y) for x in range(27, 31) for y in range(20, 21)],
@@ -593,6 +604,7 @@ class cityClass(mesa.Model):
             #Edificio 10 Caminos banqueta
             [(x, y) for x in range(19, 23) for y in range(20, 21)],
             [(x, y) for x in range(19, 23) for y in range(23, 24)],
+            [(x, y) for x in range(22, 25) for y in range(23, 24)],
 
             #Edificio 11 Caminos banqueta
             [(x, y) for x in range(25, 29) for y in range(20, 21)],
@@ -669,9 +681,12 @@ class cityClass(mesa.Model):
         """
         Crea agentes peatones con posiciones iniciales y destinos aleatorios dentro de las celdas de las banquetas.
         """
+        used_positions = []  # Lista para rastrear las posiciones ya ocupadas por peatones
+        
         for i in range(self.num_agents_p):
-            # Seleccionar una posición inicial aleatoria
-            start_position = self.random.choice(self.side_walk)
+            # Seleccionar una posición inicial aleatoria que no esté ocupada
+            start_position = self.random.choice([pos for pos in self.side_walk if pos not in used_positions])
+            used_positions.append(start_position)  # Marcar la posición como usada
 
             # Asegurarse de que el destino sea diferente de la posición inicial
             possible_destinations = [pos for pos in self.side_walk if pos != start_position]
@@ -682,7 +697,7 @@ class cityClass(mesa.Model):
             self.grid.place_agent(pedestrian, start_position)
             self.schedule.add(pedestrian)
 
-            print(f"Peatón {pedestrian.unique_id} creado: Inicio en {start_position}, Destino en {destination}")
+        print(f"Peatón {pedestrian.unique_id} creado: Inicio en {start_position}, Destino en {destination}")
 
 
     def create_traffic_lights(self):

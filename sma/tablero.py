@@ -122,10 +122,10 @@ def plot_grid(model, ax):
 
     # Dibujar direcciones permitidas
     colores_direcciones = {
-        'left': 'red',#'white', #'red',
-        'right': 'green',#'white', #'green',
-        'down': 'cyan',#'white', #'cyan',
-        'up': 'magenta',#'white', #'magenta',
+        'left': 'white', #'red',
+        'right': 'white', #'green',
+        'down': 'white', #'cyan',
+        'up': 'white', #'magenta',
     }
     for pos, directions in model.direcciones_permitidas.items():
         for direction in directions:
@@ -143,10 +143,10 @@ def plot_grid(model, ax):
                 ax.annotate("v", (pos[0] + dx, pos[1] + 1 + dy), color=colores_direcciones[direction], fontsize=8, ha='center')
 
     colores_direcciones_peat = {
-        'left': 'white',#'red',
-        'right': 'white',#'blue',
-        'down': 'white',#'cyan',
-        'up': 'white',#'magenta',
+        'left': 'red',
+        'right': 'blue',
+        'down': 'cyan',
+        'up': 'magenta',
     }
 
     # Dibujar direcciones permitidas para peatones (todas en azul)

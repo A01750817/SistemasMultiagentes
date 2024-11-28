@@ -97,7 +97,7 @@ class CarAgent(mesa.Agent):
         if next_cell != self.prev_cell:  # Evitar conflictos con la celda anterior
             content = self.model.grid.get_cell_list_contents(next_cell)
             for agent in content:
-                if agent.type == 'car':  # Verifica si hay un coche en la celda
+                if agent.type in ['car', 'pedestrian']:  # Verifica si hay un coche en la celda
                     return True
         return False
 
