@@ -92,12 +92,12 @@ class CarAgent(mesa.Agent):
         """Obtiene las direcciones permitidas para el agente desde su posición actual."""
         return self.model.direcciones_permitidas.get(self.pos, [])
 
-    def __is_there_a_car(self, next_cell):
+    def __is_there_a_vehicle(self, next_cell):
         """Checks whether there is a car in next cell."""
         if next_cell != self.prev_cell:  # Evitar conflictos con la celda anterior
             content = self.model.grid.get_cell_list_contents(next_cell)
             for agent in content:
-                if agent.type == 'car':  # Verifica si hay un coche en la celda
+                if agent.type in ['car','bus']:  # Verifica si hay un coche o bus en la celda
                     return True
         return False
 
@@ -105,7 +105,7 @@ class CarAgent(mesa.Agent):
         """Checks whether there is an obstacle in next cell."""
         content = self.model.grid.get_cell_list_contents(next_cell)
         for agent in content:
-            if agent.type in ['car', 'building', 'parking', 'pedestrian']:
+            if agent.type in ['car', 'building', 'parking', 'pedestrian','bus']:
                 return True
         return False
 
@@ -218,7 +218,7 @@ class CarAgent(mesa.Agent):
         next_step = self.path.pop(0)
 
         # Verificar si el siguiente paso está permitido y no ocupado por otro agente
-        if not self.__is_there_a_car(next_step) and not self.__is_there_a_pedestrian(next_step):
+        if not self.__is_there_a_vehicle(next_step) and not self.__is_there_a_pedestrian(next_step):
             # Procede al movimiento si no hay un coche ni un peatón en la celda
             allowed_directions = self.get_allowed_directions()
             direction_vectors = {
@@ -245,7 +245,7 @@ class CarAgent(mesa.Agent):
 
         # Si no puede moverse, intenta cambiar de carril
         if not self.__change_lanes():
-            if self.__is_there_a_car(next_step):
+            if self.__is_there_a_vehicle(next_step):
                 print(f"Coche {self.unique_id} no puede moverse porque hay otro coche en {next_step}.")
             elif self.__is_there_a_pedestrian(next_step):
                 print(f"Coche {self.unique_id} no puede moverse porque hay un peatón en {next_step}.")
@@ -310,7 +310,7 @@ class CarAgent(mesa.Agent):
         next_step = self.path.pop(0)
 
         # Verificar si el siguiente paso está permitido y no ocupado por otro agente
-        if not self.__is_there_a_car(next_step):
+        if not self.__is_there_a_vehicle(next_step):
             self.prev_cell = self.pos  # Actualiza la celda anterior
             self.__give_priority()  # Actualiza la prioridad antes de moverse
             self.__calculate_prev()  # Actualiza la dirección previa

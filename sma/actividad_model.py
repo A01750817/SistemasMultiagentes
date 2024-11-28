@@ -13,7 +13,7 @@ import mesa
 from car_agent import CarAgent
 from traffic_light import Traffic_light
 from person_agent import PersonAgent
-
+from bus_agent import BusAgent
 # Nueva clase BuildingAgent
 class BuildingAgent(mesa.Agent):
     def __init__(self, unique_id, model):
@@ -66,6 +66,9 @@ class cityClass(mesa.Model):
         self.running = True
         self.width = width
         self.height = height
+        self.bus_stops = [(3,30), (3,25), (3,16), (3, 1), (21,30)]
+        # self.bus_stops = [(2,16)]
+
         self.traffic_lights = []
         self.side_walk = [
             #Celdas Banqueda Ed1:
@@ -622,6 +625,7 @@ class cityClass(mesa.Model):
         self.create_pedestrians()
         self.create_traffic_lights()
         self.create_agents()
+        self.create_agents_bus()
 
     def create_buildings(self):
         """
@@ -664,6 +668,30 @@ class cityClass(mesa.Model):
                 if pos not in self.direcciones_peatones:
                     self.direcciones_peatones[pos] = []
                 self.direcciones_peatones[pos].append(direction_p)
+                
+    def create_agents_bus(self):
+        # Lista de paradas del autobús en orden (no predefinida)
+        # Aquí no definimos una ruta fija, el autobús determinará dinámicamente la siguiente parada
+
+        # Posición inicial del autobús (puede ser una celda adyacente a la primera parada)
+        start_position = self.random.choice(self.bus_stops)  # Asegúrate de que esta posición sea válida y no esté restringida
+
+        # Verifica que la celda esté libre
+        if not self.grid.is_cell_empty(start_position):
+            print(f"La posición inicial del autobús {start_position} está ocupada.")
+            return
+
+        # Crea una ruta inicial para el autobús
+        ruta_Autobus = [start_position] + self.bus_stops.copy()
+
+        # Crea una instancia del BusAgent con la ruta predefinida
+        bus = BusAgent(self, self.next_id(), start_position, None, self.bus_stops.copy())
+
+        # Coloca el autobús en la posición inicial dentro de la cuadrícula del modelo
+        self.grid.place_agent(bus, start_position)
+
+        # Añade el autobús al scheduler para que sea activado en cada paso de la simulación
+        self.schedule.add(bus)     
 
     def create_pedestrians(self):
         """

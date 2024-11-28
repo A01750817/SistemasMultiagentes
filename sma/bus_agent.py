@@ -3,6 +3,7 @@
 import mesa
 from traffic_light import Traffic_light   # Importando Traffic_light
 from astar import Astar
+import random
 
 class BusAgent(mesa.Agent):
     def __init__(self, model, unique_id, pos, traffic_light, ruta_Autobus):
@@ -11,6 +12,7 @@ class BusAgent(mesa.Agent):
         self.model = model
         self.traffic_light = traffic_light
         self.numeroPeatones = 0
+        self.passengers = []  # Lista para almacenar pasajeros
         self.ruta = ruta_Autobus  # Lista de paradas (tuplas de coordenadas)
         self.visited_stops = set()  # Conjunto para rastrear paradas visitadas
         self.current_stop_index = 0  # Índice de la siguiente parada
@@ -52,11 +54,40 @@ class BusAgent(mesa.Agent):
                 break
         else:
             if (x < 2 or x > self.model.width - 3) or \
-               (y < 2 or y > self.model.height - 3):
+            (y < 2 or y > self.model.height - 3):
                 priority = 2
             else:
                 priority = 1
         self.priority = priority
+        
+    def handle_stop(self):
+        """Gestiona el embarque y desembarque de pasajeros."""
+        # Desembarcar pasajeros
+        for passenger in self.passengers.copy():
+            # Decidir si el pasajero se baja en esta parada
+            decision = True  # Implementa tu lógica de decisión
+            if decision:
+                passenger.on_bus = False
+                passenger.bus = None
+                passenger.pos = self.pos  # Colocar al pasajero en la posición actual del bus
+                self.model.grid.place_agent(passenger, self.pos)
+                self.model.schedule.add(passenger)
+                self.passengers.remove(passenger)
+                print(f"Peatón {passenger.unique_id}: Se bajó del autobús {self.unique_id} en {self.pos}.")
+
+        # Embarcar pasajeros en las celdas adyacentes a la parada (bus)
+        adjacent_positions = self.get_adjacent_positions()
+        for pos in adjacent_positions:
+            cell_contents = self.model.grid.get_cell_list_contents(pos)
+            for agent in cell_contents:
+                if getattr(agent, "type", None) == "pedestrian" and agent.waiting_at_bus_stop:
+                    # Subir al pasajero al autobús
+                    agent.on_bus = True
+                    agent.bus = self
+                    self.passengers.append(agent)
+                    self.model.grid.remove_agent(agent)
+                    self.model.schedule.remove(agent)
+                    print(f"Peatón {agent.unique_id}: Se subió al autobús {self.unique_id} desde {pos}.")
 
     def __can_change_to(self):
         """Determina qué direcciones puede tomar el bus para cambiar de carril."""
@@ -137,7 +168,6 @@ class BusAgent(mesa.Agent):
             print(f"Agente bus {self.unique_id} no encontró una parada accesible.")
             return None
         
-        
     def __change_lanes(self):
         """El bus cambia de carril si es posible."""
         cells_move = self.__can_change_to()
@@ -161,6 +191,22 @@ class BusAgent(mesa.Agent):
             if agent.type in ['building', 'parking', 'car', 'bus']:
                 return True
         return False
+    
+    def get_adjacent_positions(self):
+        """Devuelve una lista de posiciones adyacentes al autobús."""
+        x, y = self.pos
+        adjacent_positions = [
+            (x - 1, y), (x + 1, y),       # izquierda y derecha
+            (x, y - 1), (x, y + 1),       # arriba y abajo
+            (x - 1, y - 1), (x - 1, y + 1),  # diagonales superiores
+            (x + 1, y - 1), (x + 1, y + 1)   # diagonales inferiores
+        ]
+        # Filtrar posiciones que estén dentro de los límites del grid
+        valid_positions = [
+            pos for pos in adjacent_positions
+            if 0 <= pos[0] < self.model.grid.width and 0 <= pos[1] < self.model.grid.height
+        ]
+        return valid_positions
 
     def move(self):
         """Realiza el movimiento del agente siguiendo la ruta calculada."""
@@ -168,6 +214,8 @@ class BusAgent(mesa.Agent):
             self.stop_counter -= 1
             print(f"Agente bus {self.unique_id} está esperando en la parada {self.destination}. Tiempo restante: {self.stop_counter}")
             if self.stop_counter == 0 and self.destination:
+                # Procesar desembarque y embarque
+                self.handle_stop()
                 # Después de esperar, buscar la siguiente parada y calcular la ruta
                 self.visited_stops.add(self.destination)
                 self.destination = self.find_next_stop()
@@ -182,10 +230,15 @@ class BusAgent(mesa.Agent):
             return
 
         if self.pos == self.destination:
-            # El autobús ha llegado a la parada actual
-            print(f"Agente bus {self.unique_id} llegó a la parada {self.destination}")
-            self.stop_counter = 10  # Tiempo de espera en la parada
-            return
+            print(f"Autobús {self.unique_id}: Llegó a la parada {self.destination}.")
+            self.stop_counter = 20  # El autobús se detiene por 20 pasos
+            self.handle_stop()
+            # Actualiza las paradas visitadas y busca la siguiente parada
+            self.visited_stops.add(self.destination)
+            self.destination = self.find_next_stop()
+            if self.destination:
+                self.path = self.calculate_path()
+            return  # El autobús está detenido, no continúa moviéndose este paso
 
         if not self.path or self.pos != self.path[0]:
             self.path = self.calculate_path()

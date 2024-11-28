@@ -11,7 +11,7 @@
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from actividad_model import cityClass, CarAgent, Traffic_light, BuildingAgent, PersonAgent
+from actividad_model import cityClass, CarAgent, Traffic_light, BuildingAgent, PersonAgent, BusAgent
 
 # Define la lista de edificios
 edificios = [
@@ -119,6 +119,11 @@ def plot_grid(model, ax):
     for (x, y) in model.garajes:
         rect = patches.Rectangle((x, y), 1, 1, linewidth=1, edgecolor='black', facecolor='yellow')
         ax.add_patch(rect)
+        
+        # Dibujar busstop
+    for (x, y) in model.bus_stops:
+        rect = patches.Rectangle((x, y), 1, 1, linewidth=1, edgecolor='black', facecolor='cyan')
+        ax.add_patch(rect)
 
     # Dibujar direcciones permitidas
     colores_direcciones = {
@@ -181,6 +186,9 @@ def plot_grid(model, ax):
                 ax.add_patch(circle)
             elif isinstance(obj, BuildingAgent):
                 rect = patches.Rectangle((x, y), 1, 1, linewidth=1, edgecolor='black', facecolor='gray')
+                ax.add_patch(rect)
+            elif isinstance(obj, BusAgent):
+                rect = patches.Rectangle((x, y), 1, 1, linewidth=1, edgecolor='black', facecolor='green')
                 ax.add_patch(rect)
             
 
