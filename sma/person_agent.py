@@ -41,8 +41,8 @@ class PersonAgent(mesa.Agent):
         # Obtener las posiciones alrededor del peatón (vecindad inmediata)
         x, y = self.pos
         neighboring_positions = [
-            (x - 1, y), (x + 1, y),  # izquierda y derecha
-            (x, y - 1), (x, y + 1)   # arriba y abajo
+            (x - 2, y), (x + 2, y),  # izquierda y derecha
+            (x, y - 2), (x, y + 2)   # arriba y abajo
         ]
 
         for neighbor in neighboring_positions:
