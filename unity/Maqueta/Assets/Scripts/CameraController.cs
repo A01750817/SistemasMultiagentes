@@ -44,7 +44,7 @@ public class CameraController : MonoBehaviour
         {
             SetCameraPriority(camB);
         }
-        else if (Input.GetKeyDown(KeyCode.C))
+        else if (Input.GetKeyDown(KeyCode.H))
         {
             SetCameraPriority(camC);
         }
