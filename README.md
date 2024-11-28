@@ -5,11 +5,11 @@
 ## Instalación de herramientas
 Para poder ejecutar el proyecto de forma correcta, se requiere de lo siguiente:
 
--[VsCode](code.visualstudio.com)
+- [VsCode](code.visualstudio.com)
 
--[Python](python.org)
+- [Python](python.org)
 
--[Unity](unity.com)
+- [Unity](unity.com)
 
 ## Instalación del proyecto
 1. Clonar el repositorio 
@@ -39,7 +39,7 @@ python tablero.py
 ```
 6. Ejecutar simulación en Unity
 Para ejecutar la simulación con visualización en Unity se debe de seguir los siguientes pasos:
-- En Python:
+- **En Python**:
 Ejecutar los siguientes comandos:
 ```bash
 cd sma
